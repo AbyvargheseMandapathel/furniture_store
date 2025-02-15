@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup | Fameo Furniture Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+        .bg-fameo {
+            background-color: #0a3d62;
+        }
+        .text-fameo {
+            color: #f4d03f;
+        }
+        .border-fameo {
+            border-color: #f4d03f;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div id="auth-container" class="w-full max-w-md space-y-8 fade-in">
+        <div class="bg-fameo p-6 rounded-lg shadow-md">
+            <img class="mx-auto h-12 w-auto mb-4" src="https://via.placeholder.com/150" alt="Fameo Logo">
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-white">Create an Account</h2>
+        </div>
+
+        <!-- Display error messages -->
+        {% if messages %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form id="signup-form" class="mt-8 space-y-6 bg-white p-6 rounded-lg shadow-md fade-in" action="{% url 'signup' %}" method="POST">
+            {% csrf_token %}
+            <div class="rounded-md shadow-sm -space-y-px">
+                <!-- Username -->
+                <div>
+                    <label for="username" class="sr-only">Username</label>
+                    <input id="username" name="username" type="text" value="{{ username|default:'' }}" required
+                           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                           placeholder="Username">
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label for="email" class="sr-only">Email</label>
+                    <input id="email" name="email" type="email" value="{{ email|default:'' }}" required
+                           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                           placeholder="Email">
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label for="password" class="sr-only">Password</label>
+                    <input id="password" name="password" type="password" required
+                           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                           placeholder="Password">
+                </div>
+
+                <!-- Confirm Password -->
+                <div>
+                    <label for="confirm_password" class="sr-only">Confirm Password</label>
+                    <input id="confirm_password" name="confirm_password" type="password" required
+                           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                           placeholder="Confirm Password">
+                </div>
+
+                <!-- Role Selection -->
+                <div>
+                    <label for="role" class="sr-only">Role</label>
+                    <select id="role" name="role" onchange="toggleFields()" required
+                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <option value="customer" {% if role == 'customer' %}selected{% endif %}>Customer</option>
+                        <option value="seller" {% if role == 'seller' %}selected{% endif %}>Seller</option>
+                        <option value="delivery_guy" {% if role == 'delivery_guy' %}selected{% endif %}>Delivery Guy</option>
+                    </select>
+                </div>
+
+                <!-- Customer Fields -->
+                <div id="customer_fields" class="hidden">
+                    <div>
+                        <label for="address" class="sr-only">Address</label>
+                        <input id="address" name="address" type="text" value="{{ address|default:'' }}"
+                               class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                               placeholder="Address">
+                    </div>
+                    <div>
+                        <label for="phone_number" class="sr-only">Phone Number</label>
+                        <input id="phone_number" name="phone_number" type="text" value="{{ phone_number|default:'' }}"
+                               class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                               placeholder="Phone Number">
+                    </div>
+                </div>
+
+                <!-- Seller Fields -->
+                <div id="seller_fields" class="hidden">
+                    <div>
+                        <label for="store_name" class="sr-only">Store Name</label>
+                        <input id="store_name" name="store_name" type="text" value="{{ store_name|default:'' }}"
+                               class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                               placeholder="Store Name">
+                    </div>
+                    <div>
+                        <label for="gst_number" class="sr-only">GST Number</label>
+                        <input id="gst_number" name="gst_number" type="text" value="{{ gst_number|default:'' }}"
+                               class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                               placeholder="GST Number">
+                    </div>
+                </div>
+
+                <!-- Delivery Guy Fields -->
+                <div id="delivery_fields" class="hidden">
+                    <div>
+                        <label for="vehicle_number" class="sr-only">Vehicle Number</label>
+                        <input id="vehicle_number" name="vehicle_number" type="text" value="{{ vehicle_number|default:'' }}"
+                               class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                               placeholder="Vehicle Number">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div>
+                <button type="submit"
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-fameo hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Sign up
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function toggleFields() {
+            let role = document.getElementById("role").value;
+            document.getElementById("customer_fields").classList.toggle("hidden", role !== "customer");
+            document.getElementById("seller_fields").classList.toggle("hidden", role !== "seller");
+            document.getElementById("delivery_fields").classList.toggle("hidden", role !== "delivery_guy");
+        }
+        document.addEventListener("DOMContentLoaded", toggleFields);
+    </script>
+</body>
+</html>
