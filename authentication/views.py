@@ -150,11 +150,14 @@ def seller_dashboard(request):
     total_sales = Order.objects.aggregate(total=Sum("total_price"))["total"] or 0
     total_orders = Order.objects.count()
     top_products = Product.objects.annotate(sales=Sum("orders__quantity")).order_by("-sales")[:5]
+    
+    total_revenue = sum(product.price * product.sales for product in top_products)
 
     context = {
         "total_sales": total_sales,
         "total_orders": total_orders,
         "top_products": top_products,
+        "total_revenue": total_revenue,
     }
     
     return render(request, "seller_dashboard.html", context)
