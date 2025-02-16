@@ -1,0 +1,98 @@
+{% extends base_template %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <!-- Header Section -->
+        <div class="mb-6 flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-gray-800">Product Management</h2>
+            <div class="flex space-x-4">
+                <a href="{% url 'add_product' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Add Product
+                </a>
+                {% if user.is_superuser %}  {# Show "Add Category" only for Admins #}
+                <a href="{% url 'add_category' %}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">
+                    Add Category
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Products Table -->
+        <div class="overflow-x-auto rounded-lg border border-gray-200">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Image</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Product</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Category</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Price</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Stock</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
+                        <th class="px-6 py-4 text-right text-sm font-semibold text-gray-700">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for product in products %}
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4">
+                            <img src="{{ product.image.url }}" class="w-16 h-16 object-cover rounded-lg border border-gray-200">
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm font-medium text-gray-900">{{ product.name }}</div>
+                            <div class="text-sm text-gray-500 line-clamp-2">{{ product.description }}</div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">{{ product.category.name }}</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">${{ product.price }}</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ product.stock }}</td>
+                        <td class="px-6 py-4">
+                            {% if product.is_approved %}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 3.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                Approved
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-sm">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                </svg>
+                                Pending
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-right space-x-2">
+                            {% if not product.is_approved and user.is_superuser %}
+                            <a href="{% url 'approve_product' product.id %}" 
+                               class="inline-flex items-center px-3 py-2 text-sm rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition-colors">
+                                Approve
+                            </a>
+                            {% endif %}
+                            <td class="px-6 py-4 text-right space-x-2">
+                                <a href="{% url 'update_product' product.id %}" 
+                                   class="inline-flex items-center px-3 py-2 text-sm rounded-lg bg-yellow-50 text-yellow-700 hover:bg-yellow-100 transition-colors">
+                                    Update
+                                </a>
+                                <a href="{% url 'delete_product' product.id %}" 
+                                   class="inline-flex items-center px-3 py-2 text-sm rounded-lg bg-red-50 text-red-700 hover:bg-red-100 transition-colors">
+                                    Delete
+                                </a>
+                            </td>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-gray-500 py-4">No products available</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

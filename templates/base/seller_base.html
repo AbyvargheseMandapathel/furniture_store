@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FurniCraft Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@heroicons/v2.0.18/24/outline/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        .dashboard-sidebar {
+            background: #1a202c;
+            transition: all 0.3s;
+        }
+        .nav-link.active {
+            background: #2d3748;
+            border-left: 4px solid #3b82f6;
+        }
+        .nav-link:hover {
+            background: #2d3748;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex">
+        <!-- Sidebar -->
+<!-- Sidebar -->
+            <aside class="dashboard-sidebar w-64 fixed top-0 left-0 text-white h-screen overflow-hidden flex flex-col">
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold">FurniCraft</h2>
+                    <p class="text-gray-400 text-sm">Premium Furniture Hub</p>
+                </div>
+                
+                <!-- Scrollable navigation container -->
+                <nav class="mt-4 flex-1 overflow-y-auto pr-2 pb-8">
+                    <div class="px-4 space-y-2">
+                        <!-- Dashboard -->
+                        <a href="{% url 'dashboard' %}" class="nav-link active flex items-center space-x-3 p-3 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 flex-shrink-0">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                            </svg>
+                            <span>Dashboard</span>
+                        </a>
+                        
+                        
+
+                        <!-- Product Management Section -->
+                        <div x-data="{ open: false }">
+                            <button @click="open = !open" class="w-full nav-link flex items-center justify-between p-3 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 flex-shrink-0">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                                    </svg>
+                                    <span>Product Management</span>
+                                </div>
+                                <svg x-bind:class="open ? 'rotate-180 transform' : ''" class="w-4 h-4 transition-transform duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div x-show="open" class="pl-12 space-y-2 mt-2">
+                                <a href="{% url 'product_list' %}" class="nav-link flex items-center space-x-2 p-2 rounded-lg">
+                                    <span class="w-2 h-2 rounded-full bg-blue-400 flex-shrink-0"></span>
+                                    <span>All Products</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Order & Delivery Section -->
+                        <div x-data="{ open: false }">
+                            <button @click="open = !open" class="w-full nav-link flex items-center justify-between p-3 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 flex-shrink-0">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                                    </svg>
+                                    <span>Orders & Delivery</span>
+                                </div>
+                                <svg x-bind:class="open ? 'rotate-180 transform' : ''" class="w-4 h-4 transition-transform duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div x-show="open" class="pl-12 space-y-2 mt-2">
+                                <a href="{% url 'track_orders' %}" class="nav-link flex items-center space-x-2 p-2 rounded-lg">
+                                    <span class="w-2 h-2 rounded-full bg-blue-400 flex-shrink-0"></span>
+                                    <span>All Orders</span>
+                                </a>
+                                <a href="{% url 'track_order' %}" class="nav-link flex items-center space-x-2 p-2 rounded-lg">
+                                    <span class="w-2 h-2 rounded-full bg-blue-400 flex-shrink-0"></span>
+                                    <span>Track Deliveries</span>
+                                </a>
+                                <a href="{% url 'view_complaints' %}" class="nav-link flex items-center space-x-2 p-2 rounded-lg">
+                                    <span class="w-2 h-2 rounded-full bg-blue-400 flex-shrink-0"></span>
+                                    <span>Complaints</span>
+                                </a>
+                            </div>
+                        </div>
+                    
+                    </div>
+                </nav>
+            </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 ml-64">
+            <!-- Navbar -->
+            <nav class="bg-white shadow-sm">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between h-16 items-center">
+                        <!-- Search Bar -->
+                        <div class="flex-1 max-w-2xl">
+                            <div class="relative">
+                                <input type="search" 
+                                       class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:border-blue-500 focus:outline-none" 
+                                       placeholder="Search...">
+                                <div class="absolute left-3 top-2.5">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Side -->
+                        <div class="flex items-center space-x-4">
+                            <!-- Notifications -->
+                            <button class="p-2 text-gray-400 hover:text-gray-500 relative">
+                                <span class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">3</span>
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                </svg>
+                            </button>
+
+                            <!-- Profile Dropdown -->
+                            <div class="relative" x-data="{ open: false }">
+                                <button @click="open = !open" class="flex items-center space-x-2">
+                                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                                        {{ request.user.first_name.0 }}{{ request.user.last_name.0 }}
+                                    </div>
+                                    <span class="text-gray-700">{{ request.user.get_full_name }}</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <!-- Dropdown Menu -->
+                                <div x-show="open" @click.away="open = false" 
+                                     class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                                    <a href="{% url 'logout' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Messages Section -->
+            {% if messages %}
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} p-4 rounded-lg mb-4 
+                            {% if message.tags == 'success' %}bg-green-100 text-green-700
+                            {% elif message.tags == 'error' %}bg-red-100 text-red-700
+                            {% else %}bg-blue-100 text-blue-700{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Main Content -->
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                {% block content %}
+                <!-- Default Content -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-xl font-semibold mb-4">Welcome to Your Dashboard</h3>
+                    <p class="text-gray-600">Select an option from the sidebar to get started</p>
+                    
+                    <!-- Add dashboard metrics or other content here -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                        <div class="bg-blue-50 p-6 rounded-lg">
+                            <h4 class="text-blue-600 font-medium">Total Orders</h4>
+                            <p class="text-3xl font-bold mt-2">24</p>
+                        </div>
+                        <div class="bg-green-50 p-6 rounded-lg">
+                            <h4 class="text-green-600 font-medium">Revenue</h4>
+                            <p class="text-3xl font-bold mt-2">$5,234</p>
+                        </div>
+                        <div class="bg-purple-50 p-6 rounded-lg">
+                            <h4 class="text-purple-600 font-medium">Products</h4>
+                            <p class="text-3xl font-bold mt-2">156</p>
+                        </div>
+                    </div>
+                </div>
+                {% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Alpine.js for dropdown functionality
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('dropdown', () => ({
+                open: false,
+                toggle() {
+                    this.open = !this.open
+                }
+            }))
+        })
+
+        // Toggle mobile menu
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.dashboard-sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
+    </script>
+</body>
+</html>

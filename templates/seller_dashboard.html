@@ -1,1 +1,53 @@
-seller
+{% extends base_template %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        
+        <!-- Header Section -->
+        <div class="mb-6 flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-gray-800">Sales Analytics</h2>
+        </div>
+
+        <!-- Analytics Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="p-6 bg-blue-100 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-700">Total Sales</h3>
+                <p class="text-2xl font-bold text-gray-900">${{ total_sales }}</p>
+            </div>
+            <div class="p-6 bg-green-100 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-700">Total Orders</h3>
+                <p class="text-2xl font-bold text-gray-900">{{ total_orders }}</p>
+            </div>
+        </div>
+
+        <!-- Top Selling Products -->
+        <div class="mt-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Top Selling Products</h3>
+            <div class="overflow-x-auto rounded-lg border border-gray-200">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Product</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Total Sold</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for product in top_products %}
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4">{{ product.name }}</td>
+                            <td class="px-6 py-4">{{ product.sales }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2" class="text-center text-gray-500 py-4">No sales data available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

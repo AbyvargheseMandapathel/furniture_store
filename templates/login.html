@@ -3,68 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fameo - Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Modern Furniture Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        * { font-family: 'Poppins', sans-serif; }
+        .login-container { background-image: linear-gradient(to bottom right, #f3f4f6 50%, #ffffff 50%); }
+        .input-field:focus { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        .animate-fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .auth-sidebar {
+            background-image: url('https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            position: relative;
         }
-
-        .fade-in {
-            animation: fadeIn 1s ease-in-out;
-        }
-
-        .bg-fameo {
-            background-color: #0a3d62;
-        }
-
-        .text-fameo {
-            color: #f4d03f;
-        }
-
-        .border-fameo {
-            border-color: #f4d03f;
+        .auth-sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(45, 55, 72, 0.8);
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="w-full max-w-md space-y-8 fade-in">
-        <div class="bg-fameo p-6 rounded-lg shadow-md text-center">
-            <img class="mx-auto h-12 w-auto mb-4" src="https://via.placeholder.com/150" alt="Fameo Logo">
-            <h2 class="text-3xl font-extrabold text-white">Sign in to your account</h2>
-        </div>
-
-        {% if messages %}
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        <form method="POST" action="{% url 'login' %}" class="bg-white p-6 rounded-lg shadow-md fade-in">
-            {% csrf_token %}
-            
-            <div class="space-y-4">
-                <div>
-                    <label for="id_username" class="sr-only">Username</label>
-                    <input id="id_username" name="username" type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 placeholder-gray-500" placeholder="Username">
-                </div>
-                <div>
-                    <label for="id_password" class="sr-only">Password</label>
-                    <input id="id_password" name="password" type="password" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 placeholder-gray-500" placeholder="Password">
+<body class="bg-gray-100">
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="login-container rounded-2xl flex flex-col lg:flex-row w-full max-w-6xl overflow-hidden">
+            <!-- Left Side (Image Section) -->
+            <div class="auth-sidebar lg:w-1/2 text-white p-12 hidden lg:flex flex-col justify-center relative">
+                <div class="relative z-10">
+                    <h2 class="text-4xl font-bold mb-4">Welcome Back</h2>
+                    <p class="text-gray-200">Discover exquisite furniture that transforms your space into a masterpiece of comfort and style.</p>
                 </div>
             </div>
 
-            <div class="flex items-center justify-between mt-4">
-                <a href="#" class="text-fameo hover:text-indigo-500 text-sm">Forgot password?</a>
-            </div>
+            <!-- Right Side (Login Form) -->
+            <div class="lg:w-1/2 bg-white p-8 md:p-12 lg:p-16 shadow-xl animate-fade-in">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-2">FurniCraft</h1>
+                    <p class="text-gray-500">Sign in to your account</p>
+                </div>
 
-            <button type="submit" class="w-full mt-4 py-2 px-4 text-sm font-medium rounded-md text-white bg-fameo hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Sign in
-            </button>
-        </form>
+                <!-- Django Messages -->
+                {% if messages %}
+                    <div class="mb-4">
+                        {% for message in messages %}
+                            <div class="px-4 py-3 rounded relative 
+                                        {% if message.tags == 'error' %} bg-red-100 border border-red-400 text-red-700 
+                                        {% elif message.tags == 'success' %} bg-green-100 border border-green-400 text-green-700 
+                                        {% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Login Form -->
+                <form id="loginForm" action="{% url 'login' %}" method="POST" class="space-y-6">
+                    {% csrf_token %}
+                    <div>
+                        <label class="block text-gray-700 mb-2 font-medium">Username</label>
+                        <input type="text" name="username" id="username"
+                               class="input-field w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:outline-none transition-colors"
+                               placeholder="Enter your username">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 mb-2 font-medium">Password</label>
+                        <input type="password" name="password" id="password"
+                               class="input-field w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:outline-none transition-colors"
+                               placeholder="Enter your password">
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input type="checkbox" class="h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-300 rounded">
+                            <label class="ml-2 text-gray-600">Remember me</label>
+                        </div>
+                        {% comment %} <a href="#" class="text-blue-500 hover:text-blue-700 text-sm">Forgot Password?</a> {% endcomment %}
+                    </div>
+
+                    <button type="submit" 
+                            class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
+                        Sign In
+                    </button>
+
+                    <p class="text-center text-gray-600">
+                        Don't have an account? 
+                        <a href="{% url "signup" %}" class="text-blue-500 hover:text-blue-700 font-semibold">Sign up</a>
+                    </p>
+                </form>
+            </div>
+        </div>
     </div>
+
+    <!-- JavaScript Validation -->
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (!username || !password) {
+                alert('Please fill in both fields.');
+                e.preventDefault();
+            }
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,16 @@
+<h1>Your Cart</h1>
+{% for item in cart %}
+    <div class="border p-4">
+        <h2>{{ item.product.name }}</h2>
+        <p>Quantity: {{ item.quantity }}</p>
+        <p>Total: ${{ item.product.price }}</p>
+        <a href="{% url 'remove_from_cart' item.product.id %}" class="text-red-500">Remove</a>
+    </div>
+{% endfor %}
+
+<form action="{% url 'apply_coupon' %}" method="get">
+    <input type="text" name="code" placeholder="Enter Coupon Code">
+    <button type="submit">Apply Coupon</button>
+</form>
+
+<a href="{% url 'checkout' %}" class="bg-blue-500 text-white p-2">Checkout</a>
