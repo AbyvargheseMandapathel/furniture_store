@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FurniCraft | Modern Home Furniture</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        .hero-bg {
+            background: linear-gradient(97deg, #FF6B35 0%, #FFA447 100%);
+        }
+        .category-card:hover .category-overlay {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center">
+                    <div class="text-orange-600 font-bold text-xl">FurniCraft</div>
+                    <div class="hidden md:flex space-x-8 ml-10">
+                        <a href="#" class="text-gray-700 hover:text-orange-600">Shop</a>
+                        <a href="#" class="text-gray-700 hover:text-orange-600">Rooms</a>
+                        <a href="#" class="text-gray-700 hover:text-orange-600">New Arrivals</a>
+                        <a href="#" class="text-gray-700 hover:text-orange-600">Deals</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="search" placeholder="Search products..." class="px-4 py-2 border rounded-lg w-64">
+                        <span class="absolute right-3 top-2.5 text-gray-400">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+                    <button class="p-2 text-gray-600 hover:text-orange-600">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="ml-1">(0)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-bg text-white">
+        <div class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Transform Your Living Space</h1>
+                    <p class="text-xl mb-8">Premium Furniture Collections at Exclusive Prices</p>
+                    <button class="bg-white text-orange-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-300">
+                        Shop Now
+                    </button>
+                </div>
+                <div class="relative">
+                    <img src="https://picsum.photos/id/1040/600/400" alt="Modern Living Room" class="rounded-lg shadow-xl">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Categories -->
+    <div class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold mb-8">Shop by Category</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="category-card relative rounded-lg overflow-hidden shadow-md">
+                <img src="https://picsum.photos/id/1027/300/200" class="w-full h-48 object-cover">
+                <div class="category-overlay absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 transition-opacity duration-300">
+                    <span class="text-white text-xl font-semibold">Sofas</span>
+                </div>
+            </div>
+            <div class="category-card relative rounded-lg overflow-hidden shadow-md">
+                <img src="https://picsum.photos/id/42/300/200" class="w-full h-48 object-cover">
+                <div class="category-overlay absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 transition-opacity duration-300">
+                    <span class="text-white text-xl font-semibold">Chairs</span>
+                </div>
+            </div>
+            <div class="category-card relative rounded-lg overflow-hidden shadow-md">
+                <img src="https://picsum.photos/id/116/300/200" class="w-full h-48 object-cover">
+                <div class="category-overlay absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 transition-opacity duration-300">
+                    <span class="text-white text-xl font-semibold">Tables</span>
+                </div>
+            </div>
+            <div class="category-card relative rounded-lg overflow-hidden shadow-md">
+                <img src="https://picsum.photos/id/133/300/200" class="w-full h-48 object-cover">
+                <div class="category-overlay absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 transition-opacity duration-300">
+                    <span class="text-white text-xl font-semibold">Bedroom</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Smart Shopping Section -->
+    <div class="bg-gray-100 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold">Smart Shopping For Your Space</h2>
+                <div class="flex flex-wrap justify-center space-x-2 md:space-x-4 mt-6">
+                    <button class="px-6 py-2 bg-orange-600 text-white rounded-full mb-2">Bestsellers</button>
+                    <button class="px-6 py-2 border border-gray-300 rounded-full hover:bg-orange-100 hover:border-orange-600 transition duration-300 mb-2">Budget Friendly</button>
+                    <button class="px-6 py-2 border border-gray-300 rounded-full hover:bg-orange-100 hover:border-orange-600 transition duration-300 mb-2">Deep Discounts</button>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Product Cards -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1">
+                    <img src="https://picsum.photos/id/26/400/300" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-2">Modern Leather Sofa</h3>
+                        <div class="flex justify-between items-center">
+                            <span class="text-orange-600 font-bold">$599</span>
+                            <button class="px-4 py-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition duration-300">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1">
+                    <img src="https://picsum.photos/id/62/400/300" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-2">Minimalist Coffee Table</h3>
+                        <div class="flex justify-between items-center">
+                            <span class="text-orange-600 font-bold">$299</span>
+                            <button class="px-4 py-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition duration-300">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1">
+                    <img src="https://picsum.photos/id/96/400/300" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-2">Scandinavian Armchair</h3>
+                        <div class="flex justify-between items-center">
+                            <span class="text-orange-600 font-bold">$349</span>
+                            <button class="px-4 py-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition duration-300">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-12">
+                <button class="px-8 py-3 border border-orange-600 text-orange-600 rounded-lg hover:bg-orange-600 hover:text-white transition duration-300">
+                    View All Products
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AR Experience Section -->
+    <div class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+        <div class="bg-orange-50 rounded-xl p-8 md:p-16 flex flex-col md:flex-row items-center justify-between">
+            <div class="md:w-1/2 mb-8 md:mb-0">
+                <h2 class="text-3xl font-bold mb-4">Try Before You Buy</h2>
+                <p class="text-gray-600 mb-6">Use our AR feature to visualize furniture in your space before making a purchase decision.</p>
+                <button class="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition duration-300">
+                    Launch AR Viewer
+                </button>
+            </div>
+            <img src="https://picsum.photos/id/239/400/300" class="md:w-1/3 rounded-lg shadow-xl" alt="AR Preview">
+        </div>
+    </div>
+
+    <!-- Testimonials -->
+    <div class="bg-gray-100 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">What Our Customers Say</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="text-orange-500">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"The quality of my new dining set exceeded my expectations. The delivery was prompt and the assembly was straightforward."</p>
+                    <div class="font-semibold">Sarah Johnson</div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="text-orange-500">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"The AR feature helped me choose the perfect sofa for my living room. Customer service was excellent throughout the process."</p>
+                    <div class="font-semibold">Michael Roberts</div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="text-orange-500">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"Beautiful furniture at reasonable prices. The coffee table I purchased has become the centerpiece of my living room."</p>
+                    <div class="font-semibold">Emily Thompson</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Newsletter -->
+    <div class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+        <div class="bg-orange-600 text-white rounded-xl p-8 md:p-12">
+            <div class="text-center max-w-2xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-bold mb-4">Stay Updated on New Arrivals</h2>
+                <p class="mb-6">Subscribe to our newsletter and get 10% off your first purchase</p>
+                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                    <input type="email" placeholder="Your email address" class="px-4 py-3 rounded-lg w-full text-gray-800" />
+                    <button class="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-300 whitespace-nowrap">
+                        Subscribe Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Customer Service</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-orange-500 transition duration-300">Track Order</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition duration-300">Returns Policy</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition duration-300">Shipping Info</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition duration-300">Help & FAQs</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Our Company</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-orange-500 transition duration-300">About Us</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition duration-300">Careers</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition duration-300">Store Locations</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition duration-300">Our Blog</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Connect With Us</h4>
+                    <div class="flex space-x-4 mb-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-pinterest-p"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </div>
+                    <p class="text-sm text-gray-400">
+                        Monday-Friday: 9am-6pm<br>
+                        Saturday: 10am-4pm<br>
+                        Sunday: Closed
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Download Our App</h4>
+                    <p class="text-sm text-gray-400 mb-4">Shop easier and faster with our mobile app</p>
+                    <div class="flex space-x-3">
+                        <a href="#" class="block">
+                            <img src="https://picsum.photos/id/160/120/40" alt="App Store" class="h-10">
+                        </a>
+                        <a href="#" class="block">
+                            <img src="https://picsum.photos/id/161/120/40" alt="Google Play" class="h-10">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-sm text-gray-400">© 2025 FurniCraft. All rights reserved.</p>
+                <div class="flex space-x-4 mt-4 md:mt-0">
+                    <a href="#" class="text-sm text-gray-400 hover:text-white transition duration-300">Privacy Policy</a>
+                    <a href="#" class="text-sm text-gray-400 hover:text-white transition duration-300">Terms of Service</a>
+                    <a href="#" class="text-sm text-gray-400 hover:text-white transition duration-300">Accessibility</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple JavaScript for demonstration purposes
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add to cart functionality
+            const addToCartButtons = document.querySelectorAll('button');
+            addToCartButtons.forEach(button => {
+                if (button.innerText.includes('Add to Cart')) {
+                    button.addEventListener('click', function() {
+                        alert('Product added to cart!');
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

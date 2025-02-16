@@ -55,4 +55,6 @@ urlpatterns = [
 
     # Coupons
     path("apply-coupon/", apply_coupon, name="apply_coupon"),
+    
+    path("home/", home, name="home"),
 ]

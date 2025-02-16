@@ -608,3 +608,7 @@ def apply_coupon(request):
     request.session["discount"] = coupon.discount_percentage
     messages.success(request, f"Coupon applied! {coupon.discount_percentage}% off.")
     return redirect("cart")
+
+
+def home(request):
+    return render(request, "home.html")
