@@ -17,9 +17,43 @@
         .category-card:hover .category-overlay {
             opacity: 1;
         }
+        .announcement-banner {
+            background-color: #2C3E50;
+        }
+        .sale-tag {
+            background-color: #e53e3e;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        .countdown-timer {
+            background-color: rgba(0,0,0,0.7);
+            border-radius: 4px;
+            padding: 4px 8px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
+    <!-- Announcement Banner -->
+    <div class="announcement-banner text-white text-sm py-2">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-center sm:justify-between items-center">
+            <p class="mb-2 sm:mb-0">🚚 Free shipping on orders over $500</p>
+            <div class="flex space-x-4">
+                <a href="#" class="hover:underline">Find a Store</a>
+                <a href="#" class="hover:underline">Track Order</a>
+                <a href="#" class="hover:underline">Contact Us</a>
+            </div>
+        </div>
+    </div>
+
     <!-- Navbar -->
     <nav class="bg-white shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -67,6 +101,30 @@
         </div>
     </div>
 
+    <!-- Flash Sale Banner -->
+    <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div class="bg-yellow-100 rounded-lg p-6 relative overflow-hidden">
+            <div class="grid md:grid-cols-2 gap-4 items-center">
+                <div class="relative z-10">
+                    <span class="inline-block bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold mb-2">FLASH SALE</span>
+                    <h2 class="text-2xl md:text-3xl font-bold mb-2">48-Hour Sale: Up to 70% Off!</h2>
+                    <p class="mb-4">Limited time offer on select items. No coupon needed.</p>
+                    <div class="countdown-timer inline-block mb-4">
+                        Ends in: 23:45:12
+                    </div>
+                    <button class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition duration-300">
+                        Shop the Sale
+                    </button>
+                </div>
+                <div class="relative">
+                    <img src="https://picsum.photos/id/28/500/300" alt="Sale Items" class="rounded-lg md:ml-auto">
+                </div>
+            </div>
+            <div class="absolute top-0 right-0 w-48 h-48 -mt-16 -mr-16 bg-yellow-300 rounded-full opacity-50"></div>
+            <div class="absolute bottom-0 left-0 w-32 h-32 -mb-16 -ml-16 bg-yellow-300 rounded-full opacity-50"></div>
+        </div>
+    </div>
+
     <!-- Featured Categories -->
     <div class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
         <h2 class="text-3xl font-bold mb-8">Shop by Category</h2>
@@ -98,6 +156,24 @@
         </div>
     </div>
 
+    <!-- New Arrivals Banner -->
+    <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div class="bg-indigo-600 rounded-lg overflow-hidden">
+            <div class="grid md:grid-cols-2 items-center">
+                <div class="p-8 text-white">
+                    <h2 class="text-3xl font-bold mb-4">New Arrivals for Spring</h2>
+                    <p class="mb-6">Refresh your space with our latest collections featuring light woods, pastel fabrics, and minimalist designs.</p>
+                    <button class="bg-white text-indigo-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition duration-300">
+                        Explore the Collection
+                    </button>
+                </div>
+                <div class="h-full">
+                    <img src="https://picsum.photos/id/1068/600/400" alt="Spring Collection" class="h-full w-full object-cover">
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Smart Shopping Section -->
     <div class="bg-gray-100 py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -112,11 +188,17 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Product Cards -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1">
-                    <img src="https://picsum.photos/id/26/400/300" class="w-full h-48 object-cover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/26/400/300" class="w-full h-48 object-cover">
+                        <div class="sale-tag">SALE</div>
+                    </div>
                     <div class="p-4">
                         <h3 class="font-semibold mb-2">Modern Leather Sofa</h3>
                         <div class="flex justify-between items-center">
-                            <span class="text-orange-600 font-bold">$599</span>
+                            <div>
+                                <span class="text-gray-500 line-through text-sm mr-2">$799</span>
+                                <span class="text-orange-600 font-bold">$599</span>
+                            </div>
                             <button class="px-4 py-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition duration-300">Add to Cart</button>
                         </div>
                     </div>
@@ -134,11 +216,17 @@
                 </div>
                 
                 <div class="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1">
-                    <img src="https://picsum.photos/id/96/400/300" class="w-full h-48 object-cover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/96/400/300" class="w-full h-48 object-cover">
+                        <div class="sale-tag">SALE</div>
+                    </div>
                     <div class="p-4">
                         <h3 class="font-semibold mb-2">Scandinavian Armchair</h3>
                         <div class="flex justify-between items-center">
-                            <span class="text-orange-600 font-bold">$349</span>
+                            <div>
+                                <span class="text-gray-500 line-through text-sm mr-2">$499</span>
+                                <span class="text-orange-600 font-bold">$349</span>
+                            </div>
                             <button class="px-4 py-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition duration-300">Add to Cart</button>
                         </div>
                     </div>
@@ -148,6 +236,43 @@
                 <button class="px-8 py-3 border border-orange-600 text-orange-600 rounded-lg hover:bg-orange-600 hover:text-white transition duration-300">
                     View All Products
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Multi-offer Banner Strip -->
+    <div class="bg-gray-200 py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-sm flex items-center space-x-4">
+                    <div class="text-orange-600 text-3xl">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold mb-1">Free Delivery</h3>
+                        <p class="text-sm text-gray-600">On orders over $500</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm flex items-center space-x-4">
+                    <div class="text-orange-600 text-3xl">
+                        <i class="fas fa-undo-alt"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold mb-1">Easy Returns</h3>
+                        <p class="text-sm text-gray-600">30 day money back guarantee</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm flex items-center space-x-4">
+                    <div class="text-orange-600 text-3xl">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold mb-1">Expert Support</h3>
+                        <p class="text-sm text-gray-600">Live chat or call 24/7</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -163,6 +288,22 @@
                 </button>
             </div>
             <img src="https://picsum.photos/id/239/400/300" class="md:w-1/3 rounded-lg shadow-xl" alt="AR Preview">
+        </div>
+    </div>
+
+    <!-- Design Inspiration Gallery Banner -->
+    <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div class="rounded-xl overflow-hidden relative">
+            <img src="https://picsum.photos/id/1048/1200/300" alt="Interior Design Inspiration" class="w-full h-48 md:h-64 object-cover">
+            <div class="absolute inset-0 bg-gradient-to-r from-black to-transparent flex items-center">
+                <div class="p-6 md:p-10 text-white max-w-md">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-2">Design Inspiration Gallery</h2>
+                    <p class="mb-4">Explore curated room designs from our professional stylists</p>
+                    <button class="bg-white text-gray-900 px-6 py-2 rounded-lg hover:bg-gray-100 transition duration-300">
+                        View Gallery
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -211,6 +352,41 @@
                     </div>
                     <p class="text-gray-600 mb-4">"Beautiful furniture at reasonable prices. The coffee table I purchased has become the centerpiece of my living room."</p>
                     <div class="font-semibold">Emily Thompson</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Membership Program Banner -->
+    <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div class="bg-gray-900 text-white rounded-lg overflow-hidden">
+            <div class="grid md:grid-cols-2 items-center">
+                <div class="p-8 md:p-12">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">Join Our VIP Membership</h2>
+                    <ul class="mb-6 space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-orange-500 mr-2"></i>
+                            Early access to sales and new arrivals
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-orange-500 mr-2"></i>
+                            Free design consultation
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-orange-500 mr-2"></i>
+                            Exclusive member-only discounts
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-orange-500 mr-2"></i>
+                            Free delivery on all orders
+                        </li>
+                    </ul>
+                    <button class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg transition duration-300">
+                        Join Now for $9.99/month
+                    </button>
+                </div>
+                <div class="hidden md:block h-full">
+                    <img src="https://picsum.photos/id/1066/600/400" alt="VIP Membership" class="h-full w-full object-cover">
                 </div>
             </div>
         </div>
