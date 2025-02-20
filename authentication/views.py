@@ -585,7 +585,6 @@ from django.shortcuts import render
 from .models import Product, Banner, Promotion
 
 def customer_list(request):
-    print("reached")
     category = request.GET.get("category", "")
     query = request.GET.get("q", "")
     products = Product.objects.filter(is_approved=True)
@@ -600,19 +599,18 @@ def customer_list(request):
     paginator = Paginator(products, 10)  # 10 products per page
     page_number = request.GET.get("page")
     products_page = paginator.get_page(page_number)
-    print(products_page)
 
     # Fetch banners and promotions
     banners = Banner.objects.filter(is_active=True)
     promotions = Promotion.objects.filter(is_active=True)
 
     return render(
-        request, 
-        "home.html", 
+        request,
+        "home.html",
         {
-            "products": products_page, 
-            "banners": banners, 
-            "promotions": promotions, 
+            "products": products_page,
+            "banners": banners,
+            "promotions": promotions,
             "categories": categories  # Pass categories to template
         }
     )
