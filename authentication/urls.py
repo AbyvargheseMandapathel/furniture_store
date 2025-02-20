@@ -58,6 +58,7 @@ urlpatterns = [
     path("update-order-status/", update_order_status, name="update_order_status"),
     
     # path("home/", home, name="home"),
-  path("delivery-addresses/add/<int:product_id>/", add_delivery_addresss, name="add_delivery_address"),]
-path("delivery-addresses/add/", add_delivery_addresss, name="add_delivery_address"),  
+    # path("delivery-addresses/add/<int:product_id>/", add_delivery_addresss, name="add_delivery_address"),]
+    path("delivery-addresses/add/", add_delivery_address, name="add_delivery_address"),  
 # path("delivery-addressesList", add_deliveryList, name="add_delivery_address"),  
+]

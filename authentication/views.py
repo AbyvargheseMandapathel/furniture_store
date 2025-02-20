@@ -120,7 +120,35 @@ def is_customer(user):
 
 @user_passes_test(is_customer)
 def customer_dashboard(request):
-    return render(request, "customer_dashboard.html")
+    user = request.user
+
+    # Ensure the user is a customer
+    if not hasattr(user, "customer"):
+        messages.error(request, "Only customers can access this page.")
+        return redirect("home")
+
+    customer = user.customer
+    orders = Order.objects.filter(customer=customer).order_by("-ordered_at")
+    cart_items = Cart.objects.filter(user=customer)
+    
+    # Get unique addresses
+    unique_addresses = {addr.address: addr for addr in DeliveryAddress.objects.filter(user=user)}.values()
+
+    # Dashboard Stats
+    total_orders = orders.count()
+    total_cart_items = cart_items.count()
+    total_unique_addresses = len(unique_addresses)
+
+    context = {
+        "customer": customer,
+        "orders": orders,
+        "cart_items": cart_items,
+        "addresses": unique_addresses,
+        "total_orders": total_orders,
+        "total_cart_items": total_cart_items,
+        "total_unique_addresses": total_unique_addresses,
+    }
+    return render(request, "customer_dashboard.html", context)
 
 
 @user_passes_test(is_admin)
@@ -561,6 +589,7 @@ def customer_list(request):
     category = request.GET.get("category", "")
     query = request.GET.get("q", "")
     products = Product.objects.filter(is_approved=True)
+    categories = Category.objects.all()  # Fetch all categories
 
     if query:
         products = products.filter(Q(name__icontains=query) | Q(description__icontains=query))
@@ -580,9 +609,13 @@ def customer_list(request):
     return render(
         request, 
         "home.html", 
-        {"products": products_page, "banners": banners, "promotions": promotions}
+        {
+            "products": products_page, 
+            "banners": banners, 
+            "promotions": promotions, 
+            "categories": categories  # Pass categories to template
+        }
     )
-
 
 
 
@@ -593,72 +626,62 @@ def product_detail(request, pk):
 
 # 🚀 Cart Views
 def cart_view(request):
-    cart = Cart.objects.filter(user=request.user.customer)
-    return render(request, "cart.html", {"cart": cart})
+    """ View to display the cart """
+    if not request.user.is_authenticated:
+        messages.error(request, "You must be logged in to view your cart.")
+        return redirect("login")
 
+    customer = get_object_or_404(Customer, user=request.user)
+    cart_items = Cart.objects.filter(user=customer)
 
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib import messages
-from .models import Product, Cart, Customer
-from django.contrib.auth.models import User
-from django.contrib.auth import get_user_model
+    cart_data = []
+    total_price = 0  # Grand total
+    
+    for item in cart_items:
+        product_total = item.product.price * item.quantity  # ✅ Total for each product
+        cart_data.append({
+            "product": item.product,
+            "quantity": item.quantity,
+            "product_total": product_total,  # ⬅️ Store per-product total
+        })
+        total_price += product_total  # ✅ Add to overall total
 
+    return render(request, "cart.html", {
+        "cart": cart_data,
+        "total_price": total_price
+    })
 
-
-User = get_user_model()  # Dynamically get the custom user model
-
-from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib import messages
-from .models import Product, Cart, Customer  # Ensure Customer is correctly imported
-
-User = get_user_model()  # Get the custom user model dynamically
 
 def add_to_cart(request, pk):
-    print("🚀 add_to_cart function called with product ID:", pk)
-    
-    # Check if user is authenticated
+    """ View to add items to the cart """
     if not request.user.is_authenticated:
-        print("❌ User is not authenticated")
-        messages.error(request, "You must be logged in to add items to the cart.")
-        return redirect("login")  # Redirect to login page
-    
-    print("✅ User is authenticated:", request.user)
+        messages.error(request, "You must be logged in to add items.")
+        return redirect("login")
 
-    product = get_object_or_404(Product, pk=pk)
-    print("📦 Product fetched:", product)
+    customer = get_object_or_404(Customer, user=request.user)
+    product = get_object_or_404(Product, id=pk)
 
-    try:
-        # Fetch customer instance for logged-in user
-        customer = Customer.objects.get(user=request.user)
-        print("✅ Fetched Customer:", customer)
-    
-    except customer.DoesNotExist:
-        print("❌ Error: Customer not found!")
-        messages.error(request, "Only customers can add products to the cart.")
-        return redirect("product_list")
-
-    # Add product to cart
     cart_item, created = Cart.objects.get_or_create(user=customer, product=product)
-
+    
     if not created:
-        cart_item.quantity += 1
-        cart_item.save()
-        print(f"🛒 Updated cart item: {cart_item}, New quantity: {cart_item.quantity}")
-    else:
-        print(f"🆕 Created new cart item: {cart_item}")
+        cart_item.quantity += 1  # ✅ Increase quantity if already in cart
+    cart_item.save()
 
-    messages.success(request, "Added to cart!")
+    messages.success(request, f"{product.name} added to cart!")
     return redirect("cart")
-
-
 
 def remove_from_cart(request, pk):
-    cart_item = get_object_or_404(Cart, user=request.user.customer, product_id=pk)
-    cart_item.delete()
-    messages.success(request, "Removed from cart!")
-    return redirect("cart")
+    """ View to remove items from the cart """
+    if not request.user.is_authenticated:
+        messages.error(request, "You must be logged in to remove items.")
+        return redirect("login")
 
+    customer = get_object_or_404(Customer, user=request.user)
+    cart_item = get_object_or_404(Cart, user=customer, product__id=pk)
+
+    cart_item.delete()
+    messages.success(request, "Item removed from cart.")
+    return redirect("cart")
 
 # 🚀 Checkout View
 # def checkout(request):
@@ -710,13 +733,22 @@ def manage_content(request):
     return render(request, "manage_content.html", {"banners": banners, "promotions": promotions})
 
 
-@login_required
+@user_passes_test(is_seller)
 def update_order_status(request):
     if request.method == "POST":
         order_id = request.POST.get("order_id")
         new_status = request.POST.get("status")
 
         order = get_object_or_404(Order, id=order_id, seller=request.user.seller)
+        
+        # If status is changing to "Cancelled", increase the stock
+        if new_status == "cancelled":
+            order.product.stock += 1
+            order.product.save()
+        else:
+            order.product.stock -= 1
+            order.product.save()
+        
         order.status = new_status
         order.save()
 
@@ -809,45 +841,28 @@ from django.contrib.auth.decorators import login_required
 #     return render(request, "add_delivery_address.html", {"form": form, "product": product})
 
 
-def add_delivery_addresss(request, product_id=None):
-    print(f"Received product_id: {product_id}")  # Debugging step
+def add_delivery_address(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "You must be logged in to add a delivery address.")
+        return redirect("login")
 
-    product = None
-    if product_id:
-        try:
-            product = get_object_or_404(Product, id=product_id)
-            print(f"Product found: {product}")  # Debugging step
-        except Exception as e:
-            print(f"Error fetching product: {e}")  # Debugging step
-
-    # Fetch all delivery addresses for the logged-in user
-
+    print("Rendering delivery address form")
+    
     if request.method == "POST":
-        print("Received POST request")  # Debugging step
-        print(request.POST)  # Print form data for debugging
-
         form = DeliveryAddressForm(request.POST)
         if form.is_valid():
-            print("Form is valid")  # Debugging step
             address = form.save(commit=False)
-            address.user = request.user  # Assign the user
+            address.user = request.user
             address.save()
-            print(f"Address saved for user: {request.user}")  # Debugging step
-
-            # Redirect to checkout after adding an address
+            print(f"Address saved for user: {request.user}")
             return redirect("checkout")
-
         else:
-            print("Form errors:", form.errors)  # Debugging step
+            print("Form errors:", form.errors)
 
     else:
         form = DeliveryAddressForm()
-        print("Rendering form page")  # Debugging step
 
-    return render(request, "add_delivery_address.html ", {
-        "form": form, 
-        "product": product, 
-    })
+    return render(request, "add_delivery_address.html", {"form": form})
 
 
 def checkout(request):
