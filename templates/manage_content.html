@@ -1,0 +1,61 @@
+{% extends base_template %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <h2 class="text-3xl font-semibold text-gray-900 mb-6 text-center">Content Management</h2>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-center space-x-4 mb-8">
+            <a href="{% url 'add_banner' %}"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-md transition duration-300">
+                ➕ Add Banner
+            </a>
+            <a href="{% url 'add_promotion' %}"
+                class="bg-green-600 hover:bg-green-700 text-white font-semibold px-5 py-2 rounded-lg shadow-md transition duration-300">
+                ➕ Add Promotion
+            </a>
+        </div>
+
+        <!-- Banners Section -->
+        <h3 class="text-2xl font-semibold text-gray-700 mt-6 mb-4 border-b pb-2">Banners</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for banner in banners %}
+            <div class="bg-gray-100 rounded-lg shadow-sm p-4 flex flex-col items-center">
+                <img src="{{ banner.image.url }}" alt="{{ banner.title }}"
+                    class="w-full h-40 object-cover rounded-lg mb-3">
+                <p class="text-lg font-medium text-gray-800">{{ banner.title }}</p>
+                <div class="flex justify-between w-full mt-3">
+                    <a href="{% url 'delete_banner' banner.id %}"
+                        class="text-red-600 hover:text-red-800 font-semibold transition duration-200">
+                        ❌ Delete
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-500">No banners available.</p>
+            {% endfor %}
+        </div>
+
+        <!-- Promotions Section -->
+        <h3 class="text-2xl font-semibold text-gray-700 mt-10 mb-4 border-b pb-2">Promotions</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for promotion in promotions %}
+            <div class="bg-gray-100 rounded-lg shadow-sm p-4 flex flex-col items-center">
+                <img src="{{ promotion.image.url }}" alt="{{ promotion.title }}"
+                    class="w-full h-40 object-cover rounded-lg mb-3">
+                <p class="text-lg font-medium text-gray-800">{{ promotion.title }}</p>
+                <div class="flex justify-between w-full mt-3">
+                    <a href="{% url 'delete_promotion' promotion.id %}"
+                        class="text-red-600 hover:text-red-800 font-semibold transition duration-200">
+                        ❌ Delete
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-500">No promotions available.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

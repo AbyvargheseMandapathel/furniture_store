@@ -1,0 +1,113 @@
+{% extends base_template %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <!-- Header Section -->
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Track Your Order</h2>
+            <p class="text-gray-600">Enter your order ID to check the status of your purchase</p>
+        </div>
+
+        <!-- Tracking Form -->
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            <div class="flex space-x-4">
+                <div class="flex-1">
+                    {{ form.order_id }}
+                </div>
+                <button type="submit" 
+                        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <span>Track Order</span>
+                </button>
+            </div>
+        </form>
+
+        <!-- Order Information -->
+        {% if order_info %}
+        <div class="mt-8 bg-gray-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Order Details</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Order Summary -->
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-sm text-gray-500">Order ID</p>
+                        <p class="font-medium text-gray-700">{{ order_info.order_id }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Product</p>
+                        <p class="font-medium text-gray-700">{{ order_info.product.name }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Quantity</p>
+                        <p class="font-medium text-gray-700">{{ order_info.quantity }}</p>
+                    </div>
+                </div>
+
+                <!-- Order Status -->
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-sm text-gray-500">Total Price</p>
+                        <p class="font-medium text-gray-700">₹{{ order_info.total_price }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Status</p>
+                        <div class="flex items-center space-x-2">
+                            {% if order_info.status == 'delivered' %}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 3.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ order_info.get_status_display }}
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-sm">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ order_info.get_status_display }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delivery Tracking -->
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <a href="{% url 'track_delivery' order_info.order_id %}" 
+                   class="inline-flex items-center text-blue-500 hover:text-blue-700">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                    </svg>
+                    Track Delivery Progress
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add this to your form styling -->
+<style>
+    #id_order_id {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #e5e7eb;
+        transition: border-color 0.2s;
+    }
+
+    #id_order_id:focus {
+        outline: none;
+        border-color: #3b82f6;
+        ring: 2px;
+        ring-color: #3b82f6;
+    }
+</style>
+{% endblock %}

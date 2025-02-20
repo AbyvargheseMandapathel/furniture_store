@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Delivery Address</title>
+</head>
+<body>
+    <h2>Add Delivery Address</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Address</button>
+    </form>
+    <a href="{% url 'add_to_cart' product.id %}">Back to Address List</a>
+</body>
+</html>
+<a href="">

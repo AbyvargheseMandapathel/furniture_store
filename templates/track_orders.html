@@ -1,0 +1,147 @@
+{% extends base_template %}
+
+{% block content %}
+<div class="bg-orange-50 min-h-screen p-8">
+    <div class="max-w-7xl mx-auto">
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <h2 class="text-3xl font-bold text-#1a202c-800 text-center mb-6">Order Tracking</h2>
+            
+            <!-- User Role Display -->
+            <div class="text-center mb-8">
+                <p class="text-#1a202c-600 font-medium">
+                    Logged in as: <span class="bg-#1a202c-100 px-3 py-1 rounded-full">{{ user.role|default:"No Role Assigned" }}</span>
+                </p>
+            </div>
+
+            <!-- Orders Table -->
+            <div class="overflow-x-auto rounded-lg border border-#1a202c-100">
+                <table class="min-w-full divide-y divide-#1a202c-200">
+                    <thead class="bg-orange-600 text-white">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-sm font-semibold">Order ID</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold">Customer</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold">Product</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold">Order Date</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold">Status</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold">Update</th>
+                            {% if user.role == "super_admin" or user.role == "sub_admin" %}
+                            <th class="px-6 py-3 text-left text-sm font-semibold">Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-orange-100">
+                        {% for order in orders %}
+                        <tr class="hover:bg-orange-50 transition-colors">
+                            <td class="px-6 py-4 text-sm text-orange-900 font-medium">{{ order.order_id }}</td>
+                            <td class="px-6 py-4 text-sm text-orange-800">{{ order.customer.user.username }}</td>
+                            <td class="px-6 py-4 text-sm text-orange-800">{{ order.product.name }}</td>
+                            <td class="px-6 py-4 text-sm text-orange-700">{{ order.ordered_at|date:"M d, Y" }}</td>
+                            <td class="px-6 py-4">
+                                <span class="px-3 py-1 rounded-full text-sm 
+                                    {% if order.status == 'Delivered' %}bg-green-100 text-green-800
+                                    {% elif order.status == 'Cancelled' %}bg-red-100 text-red-800
+                                    {% else %}bg-orange-100 text-orange-800{% endif %}">
+                                    {{ order.status }}
+                                </span>
+                                <td class="px-4 py-2">
+                                    <button onclick="openEditModal('{{ order.id }}', '{{ order.status }}')" 
+                                        class="px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm">
+                                        ✏️ Edit
+                                    </button>
+                                </td>
+                            </td>
+                            {% if user.role == "super_admin" or user.role == "sub_admin" %}
+                            <td class="px-6 py-4 space-x-2">
+                                <a href="{% url 'edit_order' order.id %}" class="px-3 py-1.5 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm transition-colors">
+                                    Edit
+                                </a>
+                                <a href="{% url 'delete_order' order.id %}" class="px-3 py-1.5 bg-red-500 text-white rounded-md hover:bg-red-600 text-sm transition-colors">
+                                    Delete
+                                </a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="{% if user.role == 'super_admin' or user.role == 'sub_admin' %}6{% else %}5{% endif %}" class="px-6 py-4 text-center text-orange-600">
+                                No orders found
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <nav class="mt-6 flex justify-center">
+                <ul class="inline-flex space-x-2">
+                    {% if orders.has_previous %}
+                    <li>
+                        <a href="?page=1" class="px-3 py-1.5 text-orange-700 bg-orange-100 rounded-md hover:bg-orange-200">
+                            First
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page={{ orders.previous_page_number }}" class="px-3 py-1.5 text-orange-700 bg-orange-100 rounded-md hover:bg-orange-200">
+                            Previous
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <li>
+                        <span class="px-3 py-1.5 bg-orange-600 text-white rounded-md">
+                            {{ orders.number }}
+                        </span>
+                    </li>
+
+                    {% if orders.has_next %}
+                    <li>
+                        <a href="?page={{ orders.next_page_number }}" class="px-3 py-1.5 text-orange-700 bg-orange-100 rounded-md hover:bg-orange-200">
+                            Next
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page={{ orders.paginator.num_pages }}" class="px-3 py-1.5 text-orange-700 bg-orange-100 rounded-md hover:bg-orange-200">
+                            Last
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Edit Order Status Modal -->
+<div id="editOrderModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+        <h3 class="text-xl font-semibold mb-4">Update Order Status</h3>
+        <form id="editOrderForm" method="post" action="{% url 'update_order_status' %}">
+            {% csrf_token %}
+            <input type="hidden" id="orderId" name="order_id">
+
+            <label for="orderStatus" class="block text-sm font-medium text-gray-700">Status</label>
+            <select id="orderStatus" name="status" class="w-full p-2 border rounded-md">
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+
+            <div class="flex justify-end space-x-2 mt-4">
+                <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-300 rounded-md">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function openEditModal(orderId, currentStatus) {
+        document.getElementById("orderId").value = orderId;
+        document.getElementById("orderStatus").value = currentStatus;
+        document.getElementById("editOrderModal").classList.remove("hidden");
+    }
+    
+    function closeEditModal() {
+        document.getElementById("editOrderModal").classList.add("hidden");
+    }
+    </script>
+{% endblock %}

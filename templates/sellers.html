@@ -1,0 +1,100 @@
+{% extends base_template %}
+
+{% block title %}Sellers{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <!-- Header Section -->
+        <div class="mb-6 flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-gray-800">Manage Sellers</h2>
+        </div>
+
+        <!-- Filter Form -->
+        <form method="GET" class="mb-6 bg-gray-100 p-4 rounded-lg flex flex-wrap gap-4 items-center">
+            <input type="text" name="store_name" placeholder="Store Name"
+                   value="{{ store_name }}" class="px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500 focus:outline-none">
+            
+            <input type="text" name="phone_number" placeholder="Phone Number"
+                   value="{{ phone_number }}" class="px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500 focus:outline-none">
+            
+            <select name="approval_status" class="px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500 focus:outline-none">
+                <option value="">All</option>
+                <option value="approved" {% if approval_status == "approved" %}selected{% endif %}>Approved</option>
+                <option value="pending" {% if approval_status == "pending" %}selected{% endif %}>Pending</option>
+            </select>
+            
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Filter</button>
+            <a href="{% url 'seller_list' %}" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">Reset</a>
+        </form>
+
+        <!-- Messages -->
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="p-4 rounded-lg mb-4 
+                        {% if message.tags == 'success' %}bg-green-100 text-green-700
+                        {% elif message.tags == 'error' %}bg-red-100 text-red-700
+                        {% else %}bg-blue-100 text-blue-700{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Table -->
+        <div class="overflow-x-auto rounded-lg border border-gray-200">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Store Name</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Phone</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
+                        <th class="px-6 py-4 text-right text-sm font-semibold text-gray-700">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for seller in sellers %}
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 text-sm text-gray-700">{{ seller.store_name }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">{{ seller.phone_number }}</td>
+                        <td class="px-6 py-4">
+                            {% if seller.is_approved %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm">
+                                    ✅ Approved
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-red-100 text-red-700 text-sm">
+                                    ⏳ Pending
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-right space-x-2">
+                            {% if seller.is_approved %}
+                                <a href="{% url 'update_approval_status' seller.user.id 'seller' 'suspend' %}" 
+                                   class="px-3 py-2 text-sm rounded-lg bg-red-50 text-red-700 hover:bg-red-100 transition-colors">
+                                    Suspend
+                                </a>
+                            {% else %}
+                                <a href="{% url 'update_approval_status' seller.user.id 'seller' 'approve' %}" 
+                                   class="px-3 py-2 text-sm rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition-colors">
+                                    Approve
+                                </a>
+                                <a href="{% url 'update_approval_status' seller.user.id 'seller' 'reject' %}" 
+                                   class="px-3 py-2 text-sm rounded-lg bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors">
+                                    Reject
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 text-center text-gray-500">No sellers found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

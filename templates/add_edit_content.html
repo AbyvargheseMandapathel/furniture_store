@@ -1,0 +1,37 @@
+{% extends base_template %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="bg-white shadow-lg rounded-xl p-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">{{ title }}</h2>
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+
+            {% for field in form %}
+            <div>
+                <label for="{{ field.id_for_label }}" class="block text-gray-800 font-semibold mb-2">
+                    {{ field.label }}
+                </label>
+                <div class="relative">
+                    {{ field }}
+                    {% if field.help_text %}
+                    <p class="text-sm text-gray-500 mt-1">{{ field.help_text }}</p>
+                    {% endif %}
+                    {% for error in field.errors %}
+                    <p class="text-sm text-red-600 mt-1">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="flex justify-center mt-8">
+                <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow-lg transition duration-300">
+                    💾 Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

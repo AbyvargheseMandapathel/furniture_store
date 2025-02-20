@@ -1,0 +1,124 @@
+{% extends base_template %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <!-- Header -->
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">Update Product</h2>
+            <p class="text-gray-600">Edit your product details below</p>
+        </div>
+
+        <!-- Form -->
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Left Column -->
+                <div class="space-y-6">
+                    <!-- Product Name -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Product Name
+                        </label>
+                        {{ form.name }}
+                    </div>
+
+                    <!-- Category -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Category
+                        </label>
+                        {{ form.category }}
+                    </div>
+
+                    <!-- Price -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Price
+                        </label>
+                        {{ form.price }}
+                    </div>
+
+                    <!-- Stock -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Stock
+                        </label>
+                        {{ form.stock }}
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="space-y-6">
+                    <!-- Description -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Description
+                        </label>
+                        {{ form.description }}
+                    </div>
+
+                    <!-- Image -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Product Image
+                        </label>
+                        {{ form.image }}
+                        {% if product.image %}
+                        <div class="mt-4">
+                            <img src="{{ product.image.url }}" 
+                                 class="w-48 h-48 object-cover rounded-lg border border-gray-200">
+                            <p class="mt-2 text-sm text-gray-500">Current Image</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex justify-end space-x-4">
+                <a href="{% url 'product_list' %}" 
+                   class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg">
+                    Cancel
+                </a>
+                <button type="submit" 
+                        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span>Update Product</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add this to your form styling -->
+<style>
+    #id_name, #id_category, #id_price, #id_stock, #id_description {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #e5e7eb;
+        transition: border-color 0.2s;
+    }
+
+    #id_name:focus, #id_category:focus, #id_price:focus, 
+    #id_stock:focus, #id_description:focus {
+        outline: none;
+        border-color: #3b82f6;
+        ring: 2px;
+        ring-color: #3b82f6;
+    }
+
+    #id_image {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #e5e7eb;
+        background-color: #f9fafb;
+    }
+</style>
+{% endblock %}
