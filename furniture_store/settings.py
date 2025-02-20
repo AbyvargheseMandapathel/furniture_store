@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     "widget_tweaks",
 ]
 
-LOGIN_URL = "/seller/login/"
+LOGIN_URL = "/login/"
 
 
 MIDDLEWARE = [

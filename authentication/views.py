@@ -651,7 +651,7 @@ def cart_view(request):
         "total_price": total_price
     })
 
-
+@login_required
 def add_to_cart(request, pk):
     """ View to add items to the cart """
     if not request.user.is_authenticated:
