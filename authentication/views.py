@@ -821,7 +821,6 @@ def add_delivery_addresss(request, product_id=None):
             print(f"Error fetching product: {e}")  # Debugging step
 
     # Fetch all delivery addresses for the logged-in user
-    delivery_addresses = DeliveryAddress.objects.filter(user=request.user)
 
     if request.method == "POST":
         print("Received POST request")  # Debugging step
@@ -845,10 +844,9 @@ def add_delivery_addresss(request, product_id=None):
         form = DeliveryAddressForm()
         print("Rendering form page")  # Debugging step
 
-    return render(request, "seller_base.html", {
+    return render(request, "add_delivery_address.html ", {
         "form": form, 
         "product": product, 
-        "delivery_addresses": delivery_addresses  # Pass addresses to template
     })
 
 
@@ -888,6 +886,6 @@ def checkout(request):
     messages.success(request, "Order placed successfully!")
     return redirect("customer_list")
 
-def add_deliveryList(request):
-    addresses = DeliveryAddress.objects.filter
-    return render(request, "seller_base.html", {"delivery_addresses": addresses})
+# def add_deliveryList(request):
+#     addresses = DeliveryAddress.objects.filter
+#     return render(request, "seller_base.html", {"delivery_addresses": addresses})

@@ -60,4 +60,4 @@ urlpatterns = [
     # path("home/", home, name="home"),
   path("delivery-addresses/add/<int:product_id>/", add_delivery_addresss, name="add_delivery_address"),]
 path("delivery-addresses/add/", add_delivery_addresss, name="add_delivery_address"),  
-path("delivery-addressesList", add_deliveryList, name="add_delivery_address"),  
+# path("delivery-addressesList", add_deliveryList, name="add_delivery_address"),  

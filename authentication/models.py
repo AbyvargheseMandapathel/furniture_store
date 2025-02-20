@@ -108,9 +108,10 @@ class DeliveryAddress(models.Model):
     city = models.CharField(max_length=100)
     zipcode = models.CharField(max_length=10)
     country = models.CharField(max_length=100)
+    
 
     def __str__(self):
-        return f"{self.full_name} - {self.address}"    
+        return f"{self.full_name} - {self.address} - {self.zipcode}"    
     
 class Order(models.Model):
     STATUS_CHOICES = [
@@ -140,7 +141,7 @@ class Order(models.Model):
 
 
     def __str__(self):
-        return f"Order {self.order_id} - {self.customer.username}"
+        return f"Order {self.order_id} - {self.customer.user.username}"
 
 class Delivery(models.Model):
     order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name="delivery")
