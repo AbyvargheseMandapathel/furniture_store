@@ -76,5 +76,6 @@ urlpatterns = [
     path("accept-order/<int:order_id>/", accept_order, name="accept_order"),
     
     path("orders/assigned/", assigned_orders, name="assigned_orders"),
+    path("classify/", classify_image, name="classify_image"),
 
 ]

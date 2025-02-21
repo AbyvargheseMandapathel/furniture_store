@@ -1,0 +1,5 @@
+0 TV
+1 Table
+2 Fridge
+3 Chair
+4 Almirah

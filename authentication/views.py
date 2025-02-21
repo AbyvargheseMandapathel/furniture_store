@@ -1130,3 +1130,57 @@ def assigned_orders(request):
 
     return render(request, "assigned_orders.html", {"orders": orders})
 
+
+import os
+import numpy as np
+from django.shortcuts import render
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from keras.models import load_model
+from PIL import Image, ImageOps
+
+
+# Load the Keras model
+MODEL_PATH = "models/keras_model.h5"
+LABELS_PATH = "models/labels.txt"
+
+model = load_model(MODEL_PATH, compile=False)
+
+# Load the labels
+with open(LABELS_PATH, "r") as file:
+    class_names = file.readlines()
+
+def classify_image(request):
+    if request.method == "POST" and request.FILES.get("image"):
+        # Save uploaded image temporarily
+        uploaded_file = request.FILES["image"]
+        file_path = default_storage.save("temp/" + uploaded_file.name, ContentFile(uploaded_file.read()))
+
+        # Open the image and preprocess it
+        image = Image.open(default_storage.open(file_path)).convert("RGB")
+
+        # Resize and normalize image
+        size = (224, 224)
+        image = ImageOps.fit(image, size, Image.Resampling.LANCZOS)
+        image_array = np.asarray(image)
+        normalized_image_array = (image_array.astype(np.float32) / 127.5) - 1
+        data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
+        data[0] = normalized_image_array
+
+        # Make prediction
+        prediction = model.predict(data)
+        index = np.argmax(prediction)
+        class_name = class_names[index].strip()
+        confidence_score = prediction[0][index]
+
+        # Delete temporary file
+        default_storage.delete(file_path)
+
+        return render(
+            request,
+            "classify_result.html",
+            {"class_name": class_name, "confidence_score": confidence_score},
+        )
+
+    return render(request, "upload_image.html")
+

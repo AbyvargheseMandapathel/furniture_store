@@ -1,0 +1,41 @@
+{% extends base_template %}
+{% block title %}Classification Result{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <!-- Header Section -->
+        <div class="mb-8 border-b border-gray-200 pb-4">
+            <h2 class="text-2xl font-bold text-gray-800">Prediction Result</h2>
+            <p class="mt-2 text-sm text-gray-500">Image classification analysis results</p>
+        </div>
+
+        <!-- Results Card -->
+        <div class="bg-gray-50 rounded-lg p-6 mb-8">
+            <dl class="space-y-4">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Predicted Class</dt>
+                    <dd class="mt-1 text-lg font-semibold text-gray-900">{{ class_name }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Confidence Score</dt>
+                    <dd class="mt-1 text-lg font-semibold text-blue-600">
+                        {{ confidence_score|floatformat:2 }}%
+                    </dd>
+                </div>
+            </dl>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end">
+            <a href="{% url 'classify_image' %}" 
+               class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                </svg>
+                Try Another Image
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
