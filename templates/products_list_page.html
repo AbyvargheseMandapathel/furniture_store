@@ -1,0 +1,106 @@
+{% extends "base/base.html" %} {% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="flex flex-col md:flex-row gap-6">
+    <!-- Left Sidebar (Categories) -->
+    <div
+      class="w-full md:w-64 bg-white rounded-lg shadow-sm p-4 border border-gray-200"
+    >
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">Categories</h2>
+      <ul class="space-y-2">
+        <li>
+          <a
+            href="{% url 'product_list_page' %}"
+            class="flex items-center p-3 rounded-lg transition-colors {% if not selected_category %}bg-blue-50 text-blue-600 font-medium{% else %}text-gray-600 hover:bg-gray-50{% endif %}"
+          >
+            <span class="mr-2">📦</span>
+            All Products
+          </a>
+        </li>
+        {% for category in categories %}
+        <li>
+          <a
+            href="{% url 'product_list_page' category.id %}"
+            class="flex items-center p-3 rounded-lg transition-colors {% if selected_category.id == category.id %}bg-blue-50 text-blue-600 font-medium{% else %}text-gray-600 hover:bg-gray-50{% endif %}"
+          >
+            <span class="mr-2">🗂️</span>
+            {{ category.name }}
+          </a>
+        </li>
+        {% empty %}
+        <li class="text-gray-500 text-sm">No categories available</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Right Side (Products) -->
+    <div class="flex-1">
+      <h1 class="text-2xl font-bold text-gray-800 mb-6">
+        {% if selected_category %} {{ selected_category.name }} {% else %} All
+        Products {% endif %}
+        <span class="text-gray-500 text-lg">({{ products|length }} items)</span>
+      </h1>
+
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+      >
+        {% for product in products %}
+        <a href="{% url 'product_detail' product.id %}" class="block">
+          <div
+            class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
+          >
+            <div class="relative">
+              <img
+                src="{{ product.image.url }}"
+                alt="{{ product.name }}"
+                class="w-full h-48 object-cover"
+              />
+              <span
+                class="absolute top-2 right-2 bg-white/90 px-2 py-1 rounded-full text-sm text-gray-600"
+              >
+                ⭐ {{ product.rating|default:"4.5" }}
+              </span>
+            </div>
+
+            <div class="p-4">
+              <h3 class="text-lg font-semibold text-gray-800">
+                {{ product.name }}
+              </h3>
+              <p class="text-sm text-gray-600 mt-1 line-clamp-2">
+                {{ product.description }}
+              </p>
+              <div class="mt-4 flex items-center justify-between">
+                <span class="text-xl font-bold text-blue-600"
+                  >₹{{ product.price }}</span
+                >
+                <span
+                  class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+                >
+                  <svg
+                    class="w-5 h-5 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                  View
+                </span>
+              </div>
+            </div>
+          </div>
+        </a>
+        {% empty %}
+        <div class="col-span-full text-center py-12">
+          <p class="text-gray-500 text-lg">No products found</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

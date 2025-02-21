@@ -1,89 +1,123 @@
-{% extends 'base/base.html' %}
-
-{% block title %}Home | FurniCraft{% endblock %}
-
+{% extends 'base/base.html' %} {% block title %}Home | FurniCraft{% endblock %}
 {% block content %}
-    <!-- Banners Section -->
-    <div class="relative">
-        <div class="swiper-container banner-carousel">
-            <div class="swiper-wrapper">
-                {% for banner in banners %}
-                <div class="swiper-slide">
-                    <a href="{{ banner.link }}" target="_blank">
-                        <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="banner-image h-96">
-                    </a>
-                </div>
-                {% endfor %}
-            </div>
-            <!-- Navigation Buttons -->
-            <div class="swiper-button-next text-white bg-black/20 p-4 rounded-full hover:bg-black/30"></div>
-            <div class="swiper-button-prev text-white bg-black/20 p-4 rounded-full hover:bg-black/30"></div>
-            <!-- Pagination -->
-            <div class="swiper-pagination"></div>
-        </div>
+<!-- Banners Section -->
+<div class="relative">
+  <div class="swiper-container banner-carousel">
+    <div class="swiper-wrapper">
+      {% for banner in banners %}
+      <div class="swiper-slide">
+        <a href="{{ banner.link }}" target="_blank">
+          <img
+            src="{{ banner.image.url }}"
+            alt="{{ banner.title }}"
+            class="banner-image h-96"
+          />
+        </a>
+      </div>
+      {% endfor %}
     </div>
+    <!-- Navigation Buttons -->
+    <div
+      class="swiper-button-next text-white bg-black/20 p-4 rounded-full hover:bg-black/30"
+    ></div>
+    <div
+      class="swiper-button-prev text-white bg-black/20 p-4 rounded-full hover:bg-black/30"
+    ></div>
+    <!-- Pagination -->
+    <div class="swiper-pagination"></div>
+  </div>
+</div>
 
-    <!-- Promotions Section -->
-    <div class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-bold mb-8 text-center">Current Promotions</h2>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {% for promotion in promotions %}
-            <div class="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-                <a href="{{ promotion.link }}" target="_blank">
-                    <img src="{{ promotion.image.url }}" alt="{{ promotion.title }}" class="w-full h-48 object-cover">
-                </a>
-                <div class="p-4">
-                    <h4 class="text-lg font-bold">{{ promotion.title }}</h4>
-                    <p class="text-gray-700">{{ promotion.description }}</p>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+<!-- Promotions Section -->
+<div class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+  <h2 class="text-3xl font-bold mb-8 text-center">Current Promotions</h2>
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for promotion in promotions %}
+    <div
+      class="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+    >
+      <a href="{{ promotion.link }}" target="_blank">
+        <img
+          src="{{ promotion.image.url }}"
+          alt="{{ promotion.title }}"
+          class="w-full h-48 object-cover"
+        />
+      </a>
+      <div class="p-4">
+        <h4 class="text-lg font-bold">{{ promotion.title }}</h4>
+        <p class="text-gray-700">{{ promotion.description }}</p>
+      </div>
     </div>
+    {% endfor %}
+  </div>
+</div>
 
-    <!-- Category Section -->
-    <div class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-bold mb-8 text-center">Shop by Category</h2>
-        <div class="swiper-container category-carousel">
-            <div class="swiper-wrapper">
-                {% for category in categories %}
-                <div class="swiper-slide">
-                    <div class="category-card bg-gradient-to-r from-gray-100 to-gray-300 rounded-lg shadow-lg flex items-center justify-center h-48 transition-transform transform hover:scale-105">
-                        <span class="text-gray-800 text-xl font-semibold tracking-wide uppercase">{{ category.name }}</span>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        <!-- Swiper Navigation Buttons -->
-        <div class="flex justify-center mt-4 space-x-4">
-            <button class="swiper-button-prev bg-gray-800 text-white px-4 py-2 rounded-full shadow-md hover:bg-gray-700 transition">‹</button>
-            <button class="swiper-button-next bg-gray-800 text-white px-4 py-2 rounded-full shadow-md hover:bg-gray-700 transition">›</button>
-        </div>
+<!-- Category Section -->
+<div class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+  <h2 class="text-3xl font-bold mb-8 text-center">Shop by Category</h2>
+  <div class="swiper-container category-carousel">
+    <div class="swiper-wrapper">
+      {% for category in categories %}
+      <div class="swiper-slide">
+        <a href="{% url 'product_list_page' category.id %}" class="block">
+          <div
+            class="category-card bg-gradient-to-r from-gray-100 to-gray-300 rounded-lg shadow-lg flex items-center justify-center h-48 transition-transform transform hover:scale-105"
+          >
+            <span
+              class="text-gray-800 text-xl font-semibold tracking-wide uppercase"
+              >{{ category.name }}</span
+            >
+          </div>
+        </a>
+      </div>
+      {% endfor %}
     </div>
+  </div>
+  <!-- Swiper Navigation Buttons -->
+  <div class="flex justify-center mt-4 space-x-4">
+    <button
+      class="swiper-button-prev bg-gray-800 text-white px-4 py-2 rounded-full shadow-md hover:bg-gray-700 transition"
+    >
+      ‹
+    </button>
+    <button
+      class="swiper-button-next bg-gray-800 text-white px-4 py-2 rounded-full shadow-md hover:bg-gray-700 transition"
+    >
+      ›
+    </button>
+  </div>
+</div>
 
-    <!-- Product Grid -->
-    <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <h2 class="text-2xl font-bold mb-4">Trending Products</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {% for product in products %}
-            <div class="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-                <div class="relative">
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover">
-                    <div class="sale-tag">SALE</div>
-                </div>
-                <div class="p-4">
-                    <h4 class="text-lg font-bold">{{ product.name }}</h4>
-                    <p class="text-gray-700">{{ product.category.name }}</p>
-                    <p class="text-red-600 font-semibold">${{ product.price }}</p>
-                    <a href="{% url 'add_to_cart' product.id %}">
-                        <button class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-300">
-                            Add to Cart
-                        </button>
-                    </a>
-                </div>
-            </div>
-            {% endfor %}
+<!-- Product Grid -->
+<div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+    <h2 class="text-2xl font-bold mb-4">Trending Products</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {% for product in products %}
+      <a href="{% url 'product_detail' product.id %}" class="block">
+        <div
+          class="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+        >
+          <div class="relative">
+            <img
+              src="{{ product.image.url }}"
+              alt="{{ product.name }}"
+              class="w-full h-48 object-cover"
+            />
+            <div class="sale-tag">SALE</div>
+          </div>
+          <div class="p-4">
+            <h4 class="text-lg font-bold">{{ product.name }}</h4>
+            <p class="text-gray-700">{{ product.category.name }}</p>
+            <p class="text-red-600 font-semibold">${{ product.price }}</p>
+            <button
+              class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-300"
+            >
+              View Details
+            </button>
+          </div>
         </div>
+      </a>
+      {% endfor %}
     </div>
-{% endblock %}
+  </div>
+{% endblock %}  

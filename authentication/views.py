@@ -1,13 +1,14 @@
+from decimal import Decimal
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import login, authenticate,logout,get_user_model
 from django.contrib import messages
-from authentication.forms import BannerForm, CategoryForm, ComplaintForm, OrderTrackingForm, ProductForm, PromotionForm,DeliveryAddressForm
+from authentication.forms import BannerForm, CategoryForm, ComplaintForm, CouponForm, OrderTrackingForm, ProductForm, PromotionForm,DeliveryAddressForm
 from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
 from django.core.paginator import Paginator
 from django.db.models import Sum, Count
-from django.db.models import Q
+from django.db.models import Q,F
 
 User = get_user_model()
 
@@ -196,9 +197,41 @@ def seller_dashboard(request):
     
     return render(request, "seller_dashboard.html", context)
 
-@user_passes_test(is_delivery)
+@login_required
 def delivery_dashboard(request):
-    return render(request, "delivery_dashboard.html")
+    if not hasattr(request.user, "deliveryguy"):
+        return redirect("home")  # Redirect if the user is not a delivery guy
+
+    delivery_guy = request.user.deliveryguy
+
+    # Fetch orders assigned to this delivery guy
+    deliveries = Delivery.objects.filter(delivery_guy=delivery_guy)
+
+    pending_deliveries = deliveries.filter(status="out_for_delivery")
+    completed_deliveries = deliveries.filter(status="delivered")
+
+    context = {
+        "deliveries": deliveries,
+        "pending_deliveries": pending_deliveries,
+        "completed_deliveries": completed_deliveries,
+    }
+    return render(request, "delivery_dashboard.html", context)
+
+
+@login_required
+def update_delivery_status(request, order_id, status):
+    if not hasattr(request.user, "deliveryguy"):
+        return redirect("home")
+
+    delivery_guy = request.user.deliveryguy
+    delivery = get_object_or_404(Delivery, order__order_id=order_id, delivery_guy=delivery_guy)
+
+    if status in ["delivered", "failed"]:
+        delivery.status = status
+        delivery.delivered_at = timezone.now() if status == "delivered" else None
+        delivery.save()
+
+    return redirect("delivery_dashboard")
 
 
 @login_required
@@ -573,16 +606,6 @@ def update_product(request, product_id):
     return render(request, "update_product.html", {"form": form, "product": product})
 
 
-from django.shortcuts import render
-from django.core.paginator import Paginator
-from django.db.models import Q
-from django.contrib.auth.decorators import login_required
-from .models import Product, Banner, Promotion
-
-from django.core.paginator import Paginator
-from django.db.models import Q
-from django.shortcuts import render
-from .models import Product, Banner, Promotion
 
 def customer_list(request):
     category = request.GET.get("category", "")
@@ -633,20 +656,27 @@ def cart_view(request):
     cart_items = Cart.objects.filter(user=customer)
 
     cart_data = []
-    total_price = 0  # Grand total
+    total_price = Decimal("0")  # ✅ Use Decimal for precision
     
     for item in cart_items:
-        product_total = item.product.price * item.quantity  # ✅ Total for each product
+        product_total = item.product.price * Decimal(item.quantity)  # ✅ Convert quantity to Decimal
         cart_data.append({
             "product": item.product,
             "quantity": item.quantity,
-            "product_total": product_total,  # ⬅️ Store per-product total
+            "product_total": product_total,  # ⬅️ Store per-product total as Decimal
         })
-        total_price += product_total  # ✅ Add to overall total
+        total_price += product_total  # ✅ Add to overall total as Decimal
+
+    # Apply discount from session (if available)
+    discount = Decimal(str(request.session.get("discount", 0)))  # ✅ Convert discount to Decimal
+    discount_amount = (total_price * discount) / Decimal("100")  # ✅ Use Decimal division
+    final_price = total_price - discount_amount  # ✅ Ensure Decimal calculation
 
     return render(request, "cart.html", {
         "cart": cart_data,
-        "total_price": total_price
+        "total_price": total_price,
+        "final_price": final_price,  # ✅ Send final price after discount
+        "discount": discount  # ✅ Send discount as Decimal
     })
 
 @login_required
@@ -659,14 +689,21 @@ def add_to_cart(request, pk):
     customer = get_object_or_404(Customer, user=request.user)
     product = get_object_or_404(Product, id=pk)
 
+    # Get quantity from the form, default to 1 if not provided
+    quantity = int(request.POST.get("quantity", 1))
+
     cart_item, created = Cart.objects.get_or_create(user=customer, product=product)
-    
+
     if not created:
-        cart_item.quantity += 1  # ✅ Increase quantity if already in cart
+        cart_item.quantity += quantity  # ✅ Increase quantity based on user input
+    else:
+        cart_item.quantity = quantity  # ✅ Set quantity if new item
+
     cart_item.save()
 
-    messages.success(request, f"{product.name} added to cart!")
+    messages.success(request, f"{quantity}x {product.name} added to cart!")
     return redirect("cart")
+
 
 def remove_from_cart(request, pk):
     """ View to remove items from the cart """
@@ -706,17 +743,20 @@ def remove_from_cart(request, pk):
 #     return redirect("customer_list")
 
 
-# 🚀 Coupon Application
+@login_required
 def apply_coupon(request):
-    code = request.GET.get("code", "")
-    coupon = Coupon.objects.filter(code=code, is_active=True).first()
+    code = request.GET.get("code", "").strip()
+    
+    coupon = Coupon.objects.filter(code=code, expires_at__gt=timezone.now(), usage_limit__gt=F("used_count")).first()
 
     if not coupon:
         messages.error(request, "Invalid or expired coupon!")
         return redirect("cart")
 
-    request.session["discount"] = coupon.discount_percentage
+    # Store discount percentage in session
+    request.session["discount"] = float(coupon.discount_percentage)
     messages.success(request, f"Coupon applied! {coupon.discount_percentage}% off.")
+    
     return redirect("cart")
 
 
@@ -863,13 +903,15 @@ def add_delivery_address(request):
     return render(request, "add_delivery_address.html", {"form": form})
 
 
+
+@login_required
 def checkout(request):
-    user = request.user  # Get the logged-in user
+    user = request.user
     try:
-        customer = Customer.objects.get(user=user)  # ✅ Get the correct Customer instance
+        customer = Customer.objects.get(user=user)
     except Customer.DoesNotExist:
         messages.error(request, "Customer profile not found!")
-        return redirect("profile")  # Redirect to profile page if customer doesn't exist
+        return redirect("profile")
 
     cart = Cart.objects.filter(user=customer)
 
@@ -877,28 +919,214 @@ def checkout(request):
         messages.error(request, "Your cart is empty!")
         return redirect("product_list")
 
-    # Check if the user has a saved address
     address = DeliveryAddress.objects.filter(user=user).last()
     if not address:
         messages.error(request, "Please add a delivery address before checkout.")
         return redirect("add_delivery_address")
 
-    total_price = sum(item.product.price * item.quantity for item in cart)
+    # Get coupon discount from session
+    discount_percentage = request.session.get("discount", 0)
+    discount_decimal = Decimal(discount_percentage)  # Convert float to Decimal for precision
+
+    # Fetch applied coupon
+    code = request.session.get("coupon_code", None)
+    coupon = None
+    if code:
+        coupon = Coupon.objects.filter(code=code, expires_at__gt=timezone.now(), usage_limit__gt=F("used_count")).first()
 
     for item in cart:
+        # Calculate item total price before discount
+        item_total_price = Decimal(item.product.price) * item.quantity
+
+        # Apply discount to each product price
+        if discount_decimal > 0:
+            discount_amount = (item_total_price * discount_decimal) / Decimal(100)
+            final_price = item_total_price - discount_amount
+        else:
+            discount_amount = Decimal(0)
+            final_price = item_total_price  # No discount applied
+
+        # Create order with discounted price
         Order.objects.create(
-            customer=customer,  # ✅ Now using the correct Customer instance
+            customer=customer,
             product=item.product,
-            seller=item.product.created_by,  # Ensure `product` has a `seller` field
+            seller=item.product.created_by,
             quantity=item.quantity,
-            total_price=item.product.price * item.quantity,
-            delivery_address=address,  # ✅ Delivery address is now correctly linked
+            total_price=final_price,  # ✅ Save final price after discount
+            discount_applied=discount_amount,  # ✅ Track discount amount
+            delivery_address=address,
         )
         item.delete()  # Remove item from cart after ordering
+
+    # Reduce coupon usage limit by 1 if a valid coupon was used
+    if coupon:
+        coupon.used_count = F("used_count") + 1
+        coupon.save(update_fields=["used_count"])
+
+        # Remove coupon from session
+        del request.session["discount"]
+        del request.session["coupon_code"]
 
     messages.success(request, "Order placed successfully!")
     return redirect("customer_list")
 
-# def add_deliveryList(request):
-#     addresses = DeliveryAddress.objects.filter
-#     return render(request, "seller_base.html", {"delivery_addresses": addresses})
+
+def product_list_page(request, category_id=None):
+    categories = Category.objects.all()
+    selected_category = None
+
+    if category_id:
+        selected_category = get_object_or_404(Category, id=category_id)
+        products = Product.objects.filter(category=selected_category, is_approved=True)
+    else:
+        products = Product.objects.filter(is_approved=True)
+
+    context = {
+        "categories": categories,
+        "products": products,
+        "selected_category": selected_category
+    }
+    return render(request, "products_list_page.html", context)
+
+
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    reviews = product.reviews.all()
+    user_has_purchased = (
+    request.user.is_authenticated 
+    and hasattr(request.user, "customer")  # Ensure the user is a Customer
+    and request.user.customer.orders.filter(product=product).exists()
+)
+
+
+    return render(request, 'product_detail.html', {
+        'product': product,
+        'reviews': reviews,
+        'user_has_purchased': user_has_purchased
+    })
+
+@login_required
+def add_review(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+
+    if request.method == "POST":
+        rating = int(request.POST.get("rating"))
+        comment = request.POST.get("comment")
+
+        if not (1 <= rating <= 5):
+            messages.error(request, "Invalid rating value.")
+            return redirect("product_detail", product_id=product.id)
+
+        Review.objects.create(product=product, user=request.user, rating=rating, comment=comment)
+        messages.success(request, "Review submitted successfully!")
+        return redirect("product_detail", product_id=product.id)
+
+    return redirect("product_detail", product_id=product.id)
+
+
+@user_passes_test(is_seller)
+def create_coupon(request):
+    if not hasattr(request.user, 'seller'):
+        messages.error(request, "You do not have permission to create coupons.")
+        return redirect("home")
+
+    if request.method == "POST":
+        form = CouponForm(request.POST)
+        if form.is_valid():
+            coupon = form.save(commit=False)
+            coupon.seller = request.user.seller
+            coupon.save()
+            messages.success(request, "Coupon created successfully!")
+            return redirect("view_coupons")
+    else:
+        form = CouponForm()
+
+    return render(request, "create_coupon.html", {"form": form})
+
+@login_required
+def view_coupons(request):
+    if not hasattr(request.user, 'seller'):
+        messages.error(request, "You do not have permission to view coupons.")
+        return redirect("home")
+
+    seller = request.user.seller
+    coupons = Coupon.objects.filter(seller=seller)
+    return render(request, "view_coupons.html", {"coupons": coupons})
+
+
+def edit_coupon(request):
+    if request.method == "POST":
+        coupon_id = request.POST.get("coupon_id")
+        code = request.POST.get("code")
+        discount_percentage = request.POST.get("discount_percentage")
+        expires_at = request.POST.get("expires_at")
+        usage_limit = request.POST.get("usage_limit")
+
+        coupon = get_object_or_404(Coupon, id=coupon_id)
+
+        # Update values
+        coupon.code = code
+        coupon.discount_percentage = discount_percentage
+        coupon.expires_at = expires_at
+        coupon.usage_limit = usage_limit
+        coupon.save()
+
+        messages.success(request, "Coupon updated successfully!")
+        return redirect("view_coupons")  # Replace with the correct view name
+
+    return redirect("view_coupons")
+
+
+def delete_coupon(request, coupon_id):
+    coupon = get_object_or_404(Coupon, id=coupon_id)
+    coupon.delete()
+    messages.success(request, "Coupon deleted successfully!")
+    return redirect("view_coupons")  # Replace with the correct view name
+
+
+@login_required
+def confirmed_orders_list(request):
+    """Show all confirmed orders to delivery guys."""
+    if not hasattr(request.user, 'deliveryguy'):
+        messages.error(request, "You are not authorized to view this page.")
+        return redirect("home")  
+
+    confirmed_orders = Order.objects.filter(status="confirmed").order_by("-ordered_at")
+    return render(request, "confirmed_orders.html", {"orders": confirmed_orders})
+
+
+@login_required
+def accept_order(request, order_id):
+    """Allow a delivery guy to accept a confirmed order."""
+    if not hasattr(request.user, 'deliveryguy'):
+        messages.error(request, "You are not authorized to accept orders.")
+        return redirect("home")
+
+    delivery_guy = request.user.deliveryguy
+    order = get_object_or_404(Order, id=order_id, status="confirmed")
+
+    # Assign order to delivery guy
+    order.status = "accepted"
+    order.save()
+
+    # Create delivery record
+    Delivery.objects.create(
+        order=order,
+        delivery_guy=delivery_guy,
+        estimated_delivery=timezone.now() + timezone.timedelta(days=2)  # Example: 2-day delivery
+    )
+
+    messages.success(request, f"Order {order.order_id} has been accepted.")
+    return redirect("confirmed_orders")
+
+
+@login_required
+def assigned_orders(request):
+    if request.user.role != "delivery_guy":
+        return redirect("dashboard")
+
+    delivery_guy = request.user.deliveryguy
+    orders = Delivery.objects.filter(delivery_guy=delivery_guy).exclude(status__in=["delivered", "failed"])
+
+    return render(request, "assigned_orders.html", {"orders": orders})
+

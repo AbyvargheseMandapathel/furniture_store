@@ -1,61 +1,90 @@
 {% extends "base/base.html" %}
-
+{% load custom_filters %}
+{# Load custom filters for calculations #}
 {% block title %}Your Cart | FurniCraft{% endblock %}
-
 {% block content %}
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <h1 class="text-3xl font-semibold text-gray-800 mb-6">Your Cart</h1>
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <h1 class="text-3xl font-semibold text-gray-800 mb-6">Your Cart</h1>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Cart Items -->
-            <div class="lg:col-span-2 space-y-6">
-                {% for item in cart %}
-                <div class="cart-item bg-white p-6 rounded-lg shadow-md flex justify-between items-center transform transition-all duration-200 hover:translate-y--2 hover:shadow-lg">
-                    <div class="flex gap-4">
-                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-32 h-32 rounded-lg object-cover">
-                        <div>
-                            <h2 class="text-xl font-semibold text-gray-800">{{ item.product.name }}</h2>
-                            <p class="text-gray-600">Qty: {{ item.quantity }} | Price: ₹{{ item.product.price }}</p>
-                            <p class="text-gray-600">Total Price: ₹{{ item.product_total|floatformat:2 }}</p>
-                        </div>
-                    </div>
-                    <a href="{% url 'remove_from_cart' item.product.id %}" class="text-red-500 hover:text-red-700">
-                        <i class="fas fa-trash"></i> Remove
-                    </a>
-                </div>
-                {% empty %}
-                <p class="text-gray-600">Your cart is empty.</p>
-                {% endfor %}
-            </div>
-
-            <!-- Order Summary -->
-            <div class="bg-white p-6 rounded-lg shadow-md sticky top-6">
-                <h3 class="text-lg font-semibold mb-4">Price Details</h3>
-                <div class="space-y-3 text-sm">
-                    <div class="flex justify-between"><span>Total Items</span><span>{{ cart|length }}</span></div>
-                    <div class="flex justify-between"><span>Total Price</span><span>₹{{ total_price|floatformat:2 }}</span></div>
-                </div>
-                <hr class="my-4">
-                <div class="flex justify-between font-semibold text-lg">
-                    <span>Total Amount</span><span>₹{{ total_price|floatformat:2 }}</span>
-                </div>
-                {% if cart %}
-                <a href="{% url 'add_delivery_address' %}" class="block mt-4">
-                    <button class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-                        Proceed to Checkout
-                    </button>
-                </a>
-                {% endif %}
-            </div>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Cart Items -->
+    <div class="lg:col-span-2 space-y-6">
+      {% for item in cart %}
+      <div class="cart-item bg-white p-6 rounded-lg shadow-md flex justify-between items-center transition hover:shadow-lg">
+        <div class="flex gap-4">
+          <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-32 h-32 rounded-lg object-cover" />
+          <div>
+            <h2 class="text-xl font-semibold text-gray-800">{{ item.product.name }}</h2>
+            <p class="text-gray-600">Qty: {{ item.quantity }} | Price: ₹{{ item.product.price }}</p>
+            <p class="text-gray-600">Total Price: ₹{{ item.product_total|floatformat:2 }}</p>
+          </div>
         </div>
+        <a href="{% url 'remove_from_cart' item.product.id %}" class="text-red-500 hover:text-red-700">
+          <i class="fas fa-trash"></i> Remove
+        </a>
+      </div>
+      {% empty %}
+      <p class="text-gray-600">Your cart is empty.</p>
+      {% endfor %}
     </div>
+
+    <!-- Order Summary -->
+    <div class="bg-white p-6 rounded-lg shadow-md sticky top-6">
+      <h3 class="text-lg font-semibold mb-4">Price Details</h3>
+      <div class="space-y-3 text-sm">
+        <div class="flex justify-between">
+          <span>Total Items</span><span>{{ cart|length }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Total Price</span><span>₹{{ total_price|floatformat:2 }}</span>
+        </div>
+      </div>
+      <hr class="my-4" />
+
+      <!-- Apply Coupon Section -->
+      <form action="{% url 'apply_coupon' %}" method="GET" class="mt-4">
+        <div class="flex">
+          <input type="text" name="code" placeholder="Enter Coupon Code" required class="w-full px-4 py-2 border rounded-l-lg focus:outline-none focus:ring focus:border-blue-300" />
+          <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-r-lg hover:bg-green-600 transition">Apply Coupon</button>
+        </div>
+      </form>
+
+      {% if discount %}
+      <p class="text-green-600 mt-2">Coupon Applied! You got {{ discount }}% off.</p>
+      {% endif %}
+
+      <!-- Discount Calculation -->
+      {% if discount %}
+      <div class="flex justify-between text-green-600 font-semibold">
+        <span>Discount ({{ discount }}%)</span>
+        <span>-₹{{ total_price|mul:discount|div:100|floatformat:2 }}</span>
+      </div>
+      <hr class="my-4" />
+      <div class="flex justify-between font-semibold text-lg">
+        <span>Final Amount</span>
+        <span>₹{{ final_price|floatformat:2 }}</span>
+      </div>
+      {% else %}
+      <div class="flex justify-between font-semibold text-lg">
+        <span>Total Amount</span>
+        <span>₹{{ total_price|floatformat:2 }}</span>
+      </div>
+      {% endif %}
+      {% if cart %}
+      <a href="{% url 'add_delivery_address' %}" class="block mt-4">
+        <button class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">Proceed to Checkout</button>
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_scripts %}
 <style>
-    .cart-item:hover { 
-        transform: translateY(-2px); 
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
+  .cart-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
 </style>
 {% endblock %}

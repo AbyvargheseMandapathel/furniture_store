@@ -120,6 +120,7 @@ class Order(models.Model):
         ("accepted", "Accepted"),
         ("shipped", "Shipped"),
         ("delivered", "Delivered"),
+        ("failed", "Failed"),
         ("cancelled", "Cancelled"),
         ("returned", "Returned"),
     ]
@@ -137,6 +138,7 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     payment_method = models.CharField(max_length=10, choices=PAYMENT_METHODS, default="cod")
     ordered_at = models.DateTimeField(auto_now_add=True)
+    discount_applied = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     delivery_address = models.ForeignKey(DeliveryAddress, on_delete=models.SET_NULL, null=True, blank=True)  # ✅ Added this field
 
 
@@ -185,11 +187,11 @@ class Cart(models.Model):
 class Coupon(models.Model):
     code = models.CharField(max_length=50, unique=True)
     discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)  # Discount in %
-    gives_free_premium = models.BooleanField(default=False)  # Does it give free premium access?
     expires_at = models.DateTimeField()  # Expiration date
     usage_limit = models.PositiveIntegerField(default=1)  # How many times it can be used
     used_count = models.PositiveIntegerField(default=0)  # Track usage count
     created_at = models.DateTimeField(auto_now_add=True)
+    seller = models.ForeignKey(Seller, related_name="seller_coupon",on_delete=models.CASCADE)
 
     def is_valid(self):
         """Check if the coupon is valid (not expired & usage limit not reached)."""
@@ -206,5 +208,15 @@ class Coupon(models.Model):
     def __str__(self):
         return f"{self.code} - {self.discount_percentage}% (Used: {self.used_count}/{self.usage_limit})"
     
+    
+class Review(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    rating = models.IntegerField()
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def stars_range(self):
+        return range(self.rating)
     
 

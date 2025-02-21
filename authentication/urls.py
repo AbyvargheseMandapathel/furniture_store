@@ -60,5 +60,21 @@ urlpatterns = [
     # path("home/", home, name="home"),
     # path("delivery-addresses/add/<int:product_id>/", add_delivery_addresss, name="add_delivery_address"),]
     path("delivery-addresses/add/", add_delivery_address, name="add_delivery_address"),  
-# path("delivery-addressesList", add_deliveryList, name="add_delivery_address"),  
+# path("delivery-addressesList", add_deliveryList, name="add_delivery_address"), 
+    path("products-list/", product_list_page, name="product_list_page"),  # Show all products
+    path("products-list/<int:category_id>/", product_list_page, name="product_list_page"),  # Show category-specific products   
+    path('product/<int:product_id>/', product_detail, name='product_detail'),
+    path('product/<int:product_id>/add_review/', add_review, name='add_review'),
+    path("create-coupon/", create_coupon, name="create_coupon"),
+    path("view-coupons/", view_coupons, name="view_coupons"),
+    path('edit-coupon/', edit_coupon, name='edit_coupon'),
+    path('delete-coupon/<int:coupon_id>/', delete_coupon, name='delete_coupon'),
+    
+    path("delivery/update/<uuid:order_id>/<str:status>/", update_delivery_status, name="update_delivery_status"),
+    
+    path("confirmed-orders/", confirmed_orders_list, name="confirmed_orders"),
+    path("accept-order/<int:order_id>/", accept_order, name="accept_order"),
+    
+    path("orders/assigned/", assigned_orders, name="assigned_orders"),
+
 ]

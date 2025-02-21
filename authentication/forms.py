@@ -1,5 +1,5 @@
 from django import forms
-from .models import Complaint, Product, Category,Banner,Promotion,Order
+from .models import Complaint, Coupon, Product, Category,Banner,Promotion,Order
 
 from .models import DeliveryAddress
 
@@ -155,4 +155,40 @@ class ProductForm(forms.ModelForm):
                 'class': 'w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
                 'placeholder': 'Available stock'
             }),
+        }
+        
+        
+class CouponForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500',
+                'placeholder': field.label
+            })
+        self.fields['expires_at'].widget.attrs['class'] += ' datetimepicker-input'
+
+    class Meta:
+        model = Coupon
+        fields = ["code", "discount_percentage", "expires_at", "usage_limit"]
+        widgets = {
+            "expires_at": forms.DateTimeInput(
+                attrs={
+                    "type": "datetime-local",
+                    "class": "w-full px-3 py-2 border rounded-md"
+                },
+                format='%Y-%m-%dT%H:%M'
+            ),
+        }
+        labels = {
+            "code": "Coupon Code",
+            "discount_percentage": "Discount Percentage",
+            "expires_at": "Expiration Date & Time",
+            "usage_limit": "Usage Limit"
+        }
+        help_texts = {
+            "code": "Unique coupon code (uppercase letters and numbers)",
+            "discount_percentage": "Percentage discount (1-100%)",
+            "expires_at": "Date and time when coupon expires",
+            "usage_limit": "Maximum number of times this coupon can be used"
         }

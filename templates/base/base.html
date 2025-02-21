@@ -69,10 +69,9 @@
                 <div class="flex items-center">
                     <div class="text-orange-600 font-bold text-xl">FurniCraft</div>
                     <div class="hidden md:flex space-x-8 ml-10">
-                        <a href="#" class="text-gray-700 hover:text-orange-600">Shop</a>
-                        <a href="#" class="text-gray-700 hover:text-orange-600">Rooms</a>
-                        <a href="#" class="text-gray-700 hover:text-orange-600">New Arrivals</a>
-                        <a href="#" class="text-gray-700 hover:text-orange-600">Deals</a>
+                        <a href="{% url 'customer_list' %}" class="text-gray-700 hover:text-orange-600">Home</a>
+                        <a href="{% url 'dashboard' %}" class="text-gray-700 hover:text-orange-600">Dashboard</a>
+                        <a href="{% url 'product_list_page' %}" class="text-gray-700 hover:text-orange-600">Categories</a>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
