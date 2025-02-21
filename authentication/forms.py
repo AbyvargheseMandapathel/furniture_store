@@ -3,10 +3,35 @@ from .models import Complaint, Product, Category,Banner,Promotion,Order
 
 from .models import DeliveryAddress
 
+from django import forms
+from .models import DeliveryAddress
+
 class DeliveryAddressForm(forms.ModelForm):
     class Meta:
         model = DeliveryAddress
         fields = ["full_name", "address", "city", "zipcode", "country"]
+        widgets = {
+            'full_name': forms.TextInput(attrs={
+                'class': 'form-input w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500',
+                'placeholder': 'Enter your full name',
+            }),
+            'address': forms.TextInput(attrs={
+                'class': 'form-input w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500',
+                'placeholder': 'Enter your address',
+            }),
+            'city': forms.TextInput(attrs={
+                'class': 'form-input w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500',
+                'placeholder': 'Enter your city',
+            }),
+            'zipcode': forms.TextInput(attrs={
+                'class': 'form-input w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500',
+                'placeholder': 'Enter your zipcode',
+            }),
+            'country': forms.TextInput(attrs={
+                'class': 'form-input w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500',
+                'placeholder': 'Enter your country',
+            }),
+        }
 
 class ProductForm(forms.ModelForm):
     class Meta:

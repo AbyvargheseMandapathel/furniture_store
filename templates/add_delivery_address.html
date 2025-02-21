@@ -1,72 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Delivery Address | FurniCraft</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.3/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        * {
-            font-family: 'Poppins', sans-serif;
-        }
-        .navbar {
-            background: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .nav-item {
-            transition: color 0.3s ease;
-        }
-        .nav-item:hover {
-            color: #FF6B35;
-        }
-        .address-form {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .form-input {
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 10px;
-            width: 100%;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        .form-input:focus {
-            border-color: #FF6B35;
-            box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
-        }
-        .form-label {
-            font-weight: 500;
-            color: #4a5568;
-        }
-        .save-btn {
-            background: #FF6B35;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            transition: background 0.3s ease;
-        }
-        .save-btn:hover {
-            background: #FFA447;
-        }
-    </style>
-</head>
-<body class="bg-gray-50">
+{% extends 'base/base.html' %}
 
-    <!-- Navbar -->
-    <nav class="navbar py-4 px-6 flex justify-between items-center">
-        <a href="#" class="text-orange-600 font-bold text-xl">FurniCraft</a>
-        <div class="space-x-6">
-            <a href="{% url 'customer_list' %}" class="text-gray-700 nav-item">Home</a>
-            <a href="{% url 'customer_list' %}" class="text-gray-700 nav-item">Shop</a>
-            <a href="{% url 'cart' %}" class="text-gray-700 nav-item">
-                <i class="fas fa-shopping-cart"></i> ({{ cart|length }})
-            </a>
-        </div>
-    </nav>
+{% block title %}Add Delivery Address | FurniCraft{% endblock %}
 
+{% block extra_css %}
+<style>
+    .address-form {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .form-input {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 10px;
+        width: 100%;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .form-input:focus {
+        border-color: #FF6B35;
+        box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+    }
+    .form-label {
+        font-weight: 500;
+        color: #4a5568;
+    }
+    .save-btn {
+        background: #FF6B35;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        transition: background 0.3s ease;
+    }
+    .save-btn:hover {
+        background: #FFA447;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
     <!-- Address Form -->
     <div class="max-w-4xl mx-auto px-4 py-8">
         <h2 class="text-3xl font-semibold text-gray-800 mb-6">Add Delivery Address</h2>
@@ -120,6 +91,4 @@
             </form>
         </div>
     </div>
-
-</body>
-</html>
+{% endblock %}
