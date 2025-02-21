@@ -207,7 +207,10 @@ def delivery_dashboard(request):
     # Fetch orders assigned to this delivery guy
     deliveries = Delivery.objects.filter(delivery_guy=delivery_guy)
 
-    pending_deliveries = deliveries.filter(status="out_for_delivery")
+    # Get pending deliveries (excluding delivered and failed)
+    pending_deliveries = deliveries.exclude(status__in=["delivered", "failed"])
+
+    # Get completed deliveries (only delivered)
     completed_deliveries = deliveries.filter(status="delivered")
 
     context = {
@@ -227,9 +230,15 @@ def update_delivery_status(request, order_id, status):
     delivery = get_object_or_404(Delivery, order__order_id=order_id, delivery_guy=delivery_guy)
 
     if status in ["delivered", "failed"]:
+        # Update Delivery model
         delivery.status = status
         delivery.delivered_at = timezone.now() if status == "delivered" else None
         delivery.save()
+
+        # Update Order model status
+        order = delivery.order
+        order.status = status
+        order.save()
 
     return redirect("delivery_dashboard")
 
@@ -296,11 +305,8 @@ def delivery_list(request):
 def update_approval_status(request, user_id, role, action):
     if role == 'seller':
         user_instance = get_object_or_404(Seller, user_id=user_id)
-    elif role == 'delivery_guy':
-        user_instance = get_object_or_404(DeliveryGuy, user_id=user_id)
     else:
-        messages.error(request, "Invalid role.")
-        return redirect('dashboard')
+        user_instance = get_object_or_404(DeliveryGuy, user_id=user_id)
 
     if action == 'approve':
         user_instance.is_approved = True
@@ -1183,4 +1189,18 @@ def classify_image(request):
         )
 
     return render(request, "upload_image.html")
+
+
+@login_required
+def delivered_orders(request):
+    """View for customers to see their delivered orders"""
+    
+    # Check if the logged-in user is a customer
+    if not hasattr(request.user, "customer"):
+        return redirect("dashboard")  # Redirect to dashboard if not a customer
+
+    # Get delivered orders for the logged-in customer
+    delivered_orders = Order.objects.filter(customer=request.user.customer, status="Delivered").order_by("-ordered_at")
+
+    return render(request, "delivered_orders.html", {"orders": delivered_orders})
 
