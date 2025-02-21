@@ -35,7 +35,7 @@ urlpatterns = [
     path("track-order/", track_order, name="track_order"),
     path("track-delivery/<uuid:order_id>/", track_delivery, name="track_delivery"),
     path("submit-complaint/", submit_complaint, name="submit_complaint"),
-    path("view-complaints/", view_complaints, name="view_complaints"),
+    path("view-reviews/", view_reviews, name="view_reviews"),
     path("track-orders/", track_orders, name="track_orders"),
     
     path("add-product/", add_product, name="add_product"),

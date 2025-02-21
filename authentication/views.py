@@ -449,16 +449,16 @@ def submit_complaint(request):
     return render(request, "submit_complaint.html", {"form": form})
 
 
-@login_required
-def view_complaints(request):
+@user_passes_test(is_seller)
+def view_reviews(request):
     if request.user.is_superuser:  # Admin
-        complaints = Complaint.objects.all()
+        reviews = Review.objects.all()
     elif hasattr(request.user, 'seller'):  # Seller
-        complaints = Complaint.objects.filter(order__seller=request.user.seller)
+        reviews = Review.objects.filter(product__created_by=request.user.seller)
     else:
-        complaints = Complaint.objects.none()  # Unauthorized users get no complaints
+        reviews = Review.objects.none()  # Unauthorized users get no reviews
 
-    return render(request, "view_complaints.html", {"complaints": complaints})
+    return render(request, "view_reviews.html", {"reviews": reviews})
 
 from django.shortcuts import render
 from django.core.paginator import Paginator
@@ -1200,7 +1200,7 @@ def delivered_orders(request):
         return redirect("dashboard")  # Redirect to dashboard if not a customer
 
     # Get delivered orders for the logged-in customer
-    delivered_orders = Order.objects.filter(customer=request.user.customer, status="Delivered").order_by("-ordered_at")
+    delivered_orders = Order.objects.filter(customer=request.user.customer, status="delivered").order_by("-ordered_at")
 
     return render(request, "delivered_orders.html", {"orders": delivered_orders})
 

@@ -1,29 +1,60 @@
 {% extends base_template %}
 
+{% block title %}Delivered Orders{% endblock %}
+
 {% block content %}
-<h2>Delivered Orders</h2>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <!-- Header Section -->
+        <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">Delivered Orders</h2>
+                <p class="text-gray-500 mt-2 text-sm">Orders that have been successfully delivered</p>
+            </div>
+            <div class="mt-4 sm:mt-0">
+                <span class="bg-green-100 text-green-800 text-sm font-medium px-4 py-2 rounded-full">
+                    {{ orders|length }} Delivered Orders
+                </span>
+            </div>
+        </div>
 
-{% if orders %}
-    <table border="1">
-        <tr>
-            <th>Order ID</th>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Total Price</th>
-            <th>Ordered At</th>
-        </tr>
-        {% for order in orders %}
-        <tr>
-            <td>{{ order.order_id }}</td>
-            <td>{{ order.product.name }}</td>
-            <td>{{ order.quantity }}</td>
-            <td>₹{{ order.total_price }}</td>
-            <td>{{ order.ordered_at }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-{% else %}
-    <p>No delivered orders yet.</p>
-{% endif %}
-
+        <!-- Orders Table -->
+        <div class="overflow-x-auto rounded-lg border border-gray-100">
+            {% if orders %}
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-sm font-medium text-gray-500">Order ID</th>
+                        <th class="px-6 py-4 text-left text-sm font-medium text-gray-500">Product</th>
+                        <th class="px-6 py-4 text-left text-sm font-medium text-gray-500">Quantity</th>
+                        <th class="px-6 py-4 text-left text-sm font-medium text-gray-500">Total Price</th>
+                        <th class="px-6 py-4 text-left text-sm font-medium text-gray-500">Ordered At</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for order in orders %}
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">#{{ order.order_id }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">{{ order.product.name }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">{{ order.quantity }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">₹{{ order.total_price }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">{{ order.ordered_at|date:"M d, Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="p-8 text-center">
+                <div class="inline-block p-4 bg-green-50 rounded-full mb-4">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">All clear!</h3>
+                <p class="text-gray-500">No delivered orders yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

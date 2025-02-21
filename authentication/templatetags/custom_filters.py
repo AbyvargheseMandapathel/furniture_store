@@ -26,3 +26,8 @@ def sub(value, arg):
         return Decimal(value) - Decimal(arg)
     except (ValueError, TypeError, InvalidOperation):
         return Decimal("0")
+    
+    
+@register.filter
+def get_range(value):
+    return range(value)
