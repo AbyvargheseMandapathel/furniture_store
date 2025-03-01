@@ -126,7 +126,7 @@ def customer_dashboard(request):
     # Ensure the user is a customer
     if not hasattr(user, "customer"):
         messages.error(request, "Only customers can access this page.")
-        return redirect("home")
+        return redirect("customer_list")
 
     customer = user.customer
     orders = Order.objects.filter(customer=customer).order_by("-ordered_at")
@@ -200,7 +200,7 @@ def seller_dashboard(request):
 @login_required
 def delivery_dashboard(request):
     if not hasattr(request.user, "deliveryguy"):
-        return redirect("home")  # Redirect if the user is not a delivery guy
+        return redirect("customer_list")  # Redirect if the user is not a delivery guy
 
     delivery_guy = request.user.deliveryguy
 
@@ -224,7 +224,7 @@ def delivery_dashboard(request):
 @login_required
 def update_delivery_status(request, order_id, status):
     if not hasattr(request.user, "deliveryguy"):
-        return redirect("home")
+        return redirect("customer_list")
 
     delivery_guy = request.user.deliveryguy
     delivery = get_object_or_404(Delivery, order__order_id=order_id, delivery_guy=delivery_guy)
@@ -594,7 +594,7 @@ def update_product(request, product_id):
         seller = Seller.objects.get(user=request.user)  # Get logged-in seller
     except Seller.DoesNotExist:
         messages.error(request, "Only approved sellers can update products.")
-        return redirect("home")
+        return redirect("customer_list")
 
     if product.created_by != seller:
         messages.error(request, "You are not authorized to update this product.")
@@ -619,6 +619,21 @@ def customer_list(request):
     products = Product.objects.filter(is_approved=True)
     categories = Category.objects.all()  # Fetch all categories
 
+    # Initialize cart_items_count to 0
+    cart_items_count = 0
+
+    if request.user.is_authenticated:
+     try:
+        # Assuming each User has a related Customer object
+        customer = request.user.customer
+        cart_items = Cart.objects.filter(user=customer).aggregate(
+            total_items=Sum('quantity')
+        )
+        cart_items_count = cart_items['total_items'] or 0
+     except Customer.DoesNotExist:
+        # Handle the case where the user does not have an associated Customer
+        cart_items_count = 0
+
     if query:
         products = products.filter(Q(name__icontains=query) | Q(description__icontains=query))
 
@@ -640,6 +655,7 @@ def customer_list(request):
             "products": products_page,
             "banners": banners,
             "promotions": promotions,
+            "cart_items_count": cart_items_count,
             "categories": categories  # Pass categories to template
         }
     )
@@ -652,6 +668,7 @@ def product_detail(request, pk):
 
 
 # 🚀 Cart Views
+@login_required
 def cart_view(request):
     """ View to display the cart """
     if not request.user.is_authenticated:
@@ -660,7 +677,22 @@ def cart_view(request):
 
     customer = get_object_or_404(Customer, user=request.user)
     cart_items = Cart.objects.filter(user=customer)
+    
+    cart_items_count = 0
 
+    # Calculate cart items count for authenticated users
+    if request.user.is_authenticated:
+     try:
+        # Assuming each User has a related Customer object
+        customer = request.user.customer
+        cart_items = Cart.objects.filter(user=customer).aggregate(
+            total_items=Sum('quantity')
+        )
+        cart_items_count = cart_items['total_items'] or 0
+     except Customer.DoesNotExist:
+        # Handle the case where the user does not have an associated Customer
+        cart_items_count = 0
+        
     cart_data = []
     total_price = Decimal("0")  # ✅ Use Decimal for precision
     
@@ -681,6 +713,7 @@ def cart_view(request):
     return render(request, "cart.html", {
         "cart": cart_data,
         "total_price": total_price,
+        "cart_items_count":cart_items_count,
         "final_price": final_price,  # ✅ Send final price after discount
         "discount": discount  # ✅ Send discount as Decimal
     })
@@ -776,6 +809,17 @@ def manage_content(request):
     promotions = Promotion.objects.all()
     return render(request, "manage_content.html", {"banners": banners, "promotions": promotions})
 
+
+def toggle_banner(request, banner_id):
+    banner = get_object_or_404(Banner, id=banner_id)
+    banner.is_active = not banner.is_active
+    banner.save()
+    return redirect('manage_content')  
+def toggle_promotion(request, promotion_id):
+    promotion = get_object_or_404(Promotion, id=promotion_id)
+    promotion.is_active = not promotion.is_active
+    promotion.save()
+    return redirect('manage_content') 
 
 @user_passes_test(is_seller)
 def update_order_status(request):
@@ -1003,11 +1047,24 @@ def product_detail(request, product_id):
     and hasattr(request.user, "customer")  # Ensure the user is a Customer
     and request.user.customer.orders.filter(product=product).exists()
 )
+    
+    if request.user.is_authenticated:
+     try:
+        # Assuming each User has a related Customer object
+        customer = request.user.customer
+        cart_items = Cart.objects.filter(user=customer).aggregate(
+            total_items=Sum('quantity')
+        )
+        cart_items_count = cart_items['total_items'] or 0
+     except Customer.DoesNotExist:
+        # Handle the case where the user does not have an associated Customer
+        cart_items_count = 0
 
 
     return render(request, 'product_detail.html', {
         'product': product,
         'reviews': reviews,
+        "cart_items_count":cart_items_count,
         'user_has_purchased': user_has_purchased
     })
 
@@ -1034,7 +1091,7 @@ def add_review(request, product_id):
 def create_coupon(request):
     if not hasattr(request.user, 'seller'):
         messages.error(request, "You do not have permission to create coupons.")
-        return redirect("home")
+        return redirect("customer_list")
 
     if request.method == "POST":
         form = CouponForm(request.POST)
@@ -1053,7 +1110,7 @@ def create_coupon(request):
 def view_coupons(request):
     if not hasattr(request.user, 'seller'):
         messages.error(request, "You do not have permission to view coupons.")
-        return redirect("home")
+        return redirect("customer_list")
 
     seller = request.user.seller
     coupons = Coupon.objects.filter(seller=seller)
@@ -1095,7 +1152,7 @@ def confirmed_orders_list(request):
     """Show all confirmed orders to delivery guys."""
     if not hasattr(request.user, 'deliveryguy'):
         messages.error(request, "You are not authorized to view this page.")
-        return redirect("home")  
+        return redirect("customer_list")  
 
     confirmed_orders = Order.objects.filter(status="confirmed").order_by("-ordered_at")
     return render(request, "confirmed_orders.html", {"orders": confirmed_orders})
@@ -1106,7 +1163,7 @@ def accept_order(request, order_id):
     """Allow a delivery guy to accept a confirmed order."""
     if not hasattr(request.user, 'deliveryguy'):
         messages.error(request, "You are not authorized to accept orders.")
-        return redirect("home")
+        return redirect("customer_list")
 
     delivery_guy = request.user.deliveryguy
     order = get_object_or_404(Order, id=order_id, status="confirmed")
@@ -1139,18 +1196,27 @@ def assigned_orders(request):
 
 import os
 import numpy as np
+import tensorflow as tf
 from django.shortcuts import render
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-from keras.models import load_model
 from PIL import Image, ImageOps
 
-
-# Load the Keras model
+# Paths to model and labels
 MODEL_PATH = "models/keras_model.h5"
 LABELS_PATH = "models/labels.txt"
 
-model = load_model(MODEL_PATH, compile=False)
+# Custom model loading function to handle DepthwiseConv2D compatibility
+def load_model_with_custom_objects(model_path):
+    with tf.keras.utils.custom_object_scope({
+        'DepthwiseConv2D': lambda **kwargs: tf.keras.layers.DepthwiseConv2D(
+            **{k: v for k, v in kwargs.items() if k != 'groups'}
+        )
+    }):
+        return tf.keras.models.load_model(model_path, compile=False)
+
+# Load the model with custom object handling
+model = load_model_with_custom_objects(MODEL_PATH)
 
 # Load the labels
 with open(LABELS_PATH, "r") as file:
@@ -1161,10 +1227,10 @@ def classify_image(request):
         # Save uploaded image temporarily
         uploaded_file = request.FILES["image"]
         file_path = default_storage.save("temp/" + uploaded_file.name, ContentFile(uploaded_file.read()))
-
+        
         # Open the image and preprocess it
         image = Image.open(default_storage.open(file_path)).convert("RGB")
-
+        
         # Resize and normalize image
         size = (224, 224)
         image = ImageOps.fit(image, size, Image.Resampling.LANCZOS)
@@ -1172,22 +1238,22 @@ def classify_image(request):
         normalized_image_array = (image_array.astype(np.float32) / 127.5) - 1
         data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
         data[0] = normalized_image_array
-
+        
         # Make prediction
         prediction = model.predict(data)
         index = np.argmax(prediction)
         class_name = class_names[index].strip()
         confidence_score = prediction[0][index]
-
+        
         # Delete temporary file
         default_storage.delete(file_path)
-
+        
         return render(
             request,
             "classify_result.html",
             {"class_name": class_name, "confidence_score": confidence_score},
         )
-
+    
     return render(request, "upload_image.html")
 
 

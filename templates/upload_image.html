@@ -20,17 +20,27 @@
                     Select Image
                 </label>
                 <div class="mt-1 flex items-center">
-                    <label class="flex flex-col items-center px-4 py-6 bg-white text-blue-600 rounded-lg border-2 border-dashed border-gray-300 cursor-pointer hover:border-blue-500 hover:bg-gray-50 transition-colors">
+                    <label class="flex flex-col items-center px-4 py-6 bg-white text-blue-600 rounded-lg border-2 border-dashed border-gray-300 cursor-pointer hover:border-blue-500 hover:bg-gray-50 transition-colors w-full">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                         </svg>
-                        <span class="mt-2 text-sm text-gray-600">Click to upload</span>
-                        <input type="file" name="image" accept="image/*" required class="hidden">
+                        <span class="mt-2 text-sm text-gray-600" id="file-name">Click to upload</span>
+                        <input type="file" name="image" accept="image/*" required class="hidden" id="file-input">
                     </label>
                 </div>
                 <p class="mt-2 text-xs text-gray-500">
                     Supported formats: JPEG, PNG, WEBP
                 </p>
+            </div>
+
+            <!-- Client-side Preview -->
+            <div id="client-preview" class="hidden mt-8 pt-6 border-t border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Selected Image Preview</h3>
+                <p class="text-sm text-gray-500 mb-4">File name: <span id="preview-filename"></span></p>
+                <div class="relative max-w-md rounded-lg overflow-hidden shadow-lg">
+                    <img id="preview-image" class="w-full h-auto object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                </div>
             </div>
 
             <!-- Submit Button -->
@@ -45,6 +55,18 @@
             </div>
         </form>
 
+        <!-- Server-side Preview -->
+        {% if uploaded_image %}
+        <div class="mt-8 pt-6 border-t border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Uploaded Image Preview</h3>
+            <p class="text-sm text-gray-500 mb-4">File name: {{ filename }}</p>
+            <div class="relative max-w-md rounded-lg overflow-hidden shadow-lg">
+                <img src="{{ uploaded_image }}" alt="Uploaded Image" class="w-full h-auto object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Messages -->
         {% if messages %}
         <div class="mt-8 space-y-4">
@@ -57,4 +79,39 @@
         {% endif %}
     </div>
 </div>
+
+<script>
+    // Client-side preview functionality
+    document.getElementById('file-input').addEventListener('change', function(e) {
+        const fileName = document.getElementById('file-name');
+        const previewFilename = document.getElementById('preview-filename');
+        const clientPreview = document.getElementById('client-preview');
+        const previewImage = document.getElementById('preview-image');
+        
+        if (this.files && this.files[0]) {
+            // Update file names
+            const filename = this.files[0].name;
+            fileName.textContent = filename;
+            previewFilename.textContent = filename;
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                clientPreview.classList.remove('hidden');
+            };
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+</script>
+
+<style>
+    .bg-gradient-to-t {
+        background-image: linear-gradient(to top, rgba(0, 0, 0, 0.2), transparent);
+    }
+    #preview-image {
+        max-height: 500px;
+        object-fit: contain;
+    }
+</style>
 {% endblock %}

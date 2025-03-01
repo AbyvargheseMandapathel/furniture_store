@@ -18,44 +18,66 @@
         </div>
 
         <!-- Banners Section -->
-        <h3 class="text-2xl font-semibold text-gray-700 mt-6 mb-4 border-b pb-2">Banners</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {% for banner in banners %}
-            <div class="bg-gray-100 rounded-lg shadow-sm p-4 flex flex-col items-center">
-                <img src="{{ banner.image.url }}" alt="{{ banner.title }}"
-                    class="w-full h-40 object-cover rounded-lg mb-3">
-                <p class="text-lg font-medium text-gray-800">{{ banner.title }}</p>
-                <div class="flex justify-between w-full mt-3">
-                    <a href="{% url 'delete_banner' banner.id %}"
-                        class="text-red-600 hover:text-red-800 font-semibold transition duration-200">
-                        ❌ Delete
-                    </a>
+                <h3 class="text-2xl font-semibold text-gray-700 mt-6 mb-4 border-b pb-2">Banners</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for banner in banners %}
+                    <div class="bg-gray-100 rounded-lg shadow-sm p-4 flex flex-col items-center">
+                        <img src="{{ banner.image.url }}" alt="{{ banner.title }}"
+                            class="w-full h-40 object-cover rounded-lg mb-3">
+                        <p class="text-lg font-medium text-gray-800">{{ banner.title }}</p>
+                        <div class="flex justify-between w-full mt-3">
+                            <a href="{% url 'delete_banner' banner.id %}"
+                                class="text-red-600 hover:text-red-800 font-semibold transition duration-200">
+                                ❌ Delete
+                            </a>
+                            {% if banner.is_active %}
+                            <a href="{% url 'toggle_banner' banner.id %}"
+                                class="text-yellow-600 hover:text-yellow-800 font-semibold transition duration-200">
+                                ⏻ Turn Off
+                            </a>
+                            {% else %}
+                            <a href="{% url 'toggle_banner' banner.id %}"
+                                class="text-green-600 hover:text-green-800 font-semibold transition duration-200">
+                                ⏻ Turn On
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-500">No banners available.</p>
+                    {% endfor %}
                 </div>
-            </div>
-            {% empty %}
-            <p class="text-gray-500">No banners available.</p>
-            {% endfor %}
-        </div>
 
         <!-- Promotions Section -->
-        <h3 class="text-2xl font-semibold text-gray-700 mt-10 mb-4 border-b pb-2">Promotions</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {% for promotion in promotions %}
-            <div class="bg-gray-100 rounded-lg shadow-sm p-4 flex flex-col items-center">
-                <img src="{{ promotion.image.url }}" alt="{{ promotion.title }}"
-                    class="w-full h-40 object-cover rounded-lg mb-3">
-                <p class="text-lg font-medium text-gray-800">{{ promotion.title }}</p>
-                <div class="flex justify-between w-full mt-3">
-                    <a href="{% url 'delete_promotion' promotion.id %}"
-                        class="text-red-600 hover:text-red-800 font-semibold transition duration-200">
-                        ❌ Delete
-                    </a>
-                </div>
-            </div>
-            {% empty %}
-            <p class="text-gray-500">No promotions available.</p>
-            {% endfor %}
+<h3 class="text-2xl font-semibold text-gray-700 mt-10 mb-4 border-b pb-2">Promotions</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for promotion in promotions %}
+    <div class="bg-gray-100 rounded-lg shadow-sm p-4 flex flex-col items-center">
+        <img src="{{ promotion.image.url }}" alt="{{ promotion.title }}"
+            class="w-full h-40 object-cover rounded-lg mb-3">
+        <p class="text-lg font-medium text-gray-800">{{ promotion.title }}</p>
+        <div class="flex justify-between w-full mt-3">
+            <a href="{% url 'delete_promotion' promotion.id %}"
+                class="text-red-600 hover:text-red-800 font-semibold transition duration-200">
+                ❌ Delete
+            </a>
+            {% if promotion.is_active %}
+            <a href="{% url 'toggle_promotion' promotion.id %}"
+                class="text-yellow-600 hover:text-yellow-800 font-semibold transition duration-200">
+                ⏻ Turn Off
+            </a>
+            {% else %}
+            <a href="{% url 'toggle_promotion' promotion.id %}"
+                class="text-green-600 hover:text-green-800 font-semibold transition duration-200">
+                ⏻ Turn On
+            </a>
+            {% endif %}
         </div>
+    </div>
+    {% empty %}
+    <p class="text-gray-500">No promotions available.</p>
+    {% endfor %}
+</div>
     </div>
 </div>
 {% endblock %}

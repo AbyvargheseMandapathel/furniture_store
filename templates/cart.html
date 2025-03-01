@@ -33,7 +33,7 @@
       <h3 class="text-lg font-semibold mb-4">Price Details</h3>
       <div class="space-y-3 text-sm">
         <div class="flex justify-between">
-          <span>Total Items</span><span>{{ cart|length }}</span>
+          {% comment %} <span>Total Items</span><span>{{ cart|length }}</span> {% endcomment %}
         </div>
         <div class="flex justify-between">
           <span>Total Price</span><span>₹{{ total_price|floatformat:2 }}</span>

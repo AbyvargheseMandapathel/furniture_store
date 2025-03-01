@@ -31,6 +31,8 @@ urlpatterns = [
     path("content-management/banner/delete/<int:banner_id>/", delete_banner, name="delete_banner"),
     path("content-management/promotion/add/", add_promotion, name="add_promotion"),
     path("content-management/promotion/delete/<int:promotion_id>/", delete_promotion, name="delete_promotion"),
+    path('toggle_banner/<int:banner_id>/', toggle_banner, name='toggle_banner'),
+    path('toggle_promotion/<int:promotion_id>/', toggle_promotion, name='toggle_promotion'),
     
     path("track-order/", track_order, name="track_order"),
     path("track-delivery/<uuid:order_id>/", track_delivery, name="track_delivery"),
