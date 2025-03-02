@@ -117,6 +117,12 @@
                                    required>
                         </div>
                         <div>
+                            <label class="block text-gray-700 mb-2 font-medium">Confirm password</label>
+                            <input type="password" name="Confirm_password" 
+                                   class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:outline-none"
+                                   required>
+                        </div>
+                        <div>
                             <label class="block text-gray-700 mb-2 font-medium">First Name</label>
                             <input type="text" name="first_name" 
                                    class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:outline-none"
@@ -245,5 +251,27 @@
             radio.addEventListener('change', showRoleFields);
         });
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector("form"); // Selects the form dynamically
+            const password = document.querySelector("input[name='password']");
+            const confirmPassword = document.querySelector("input[name='Confirm_password']");
+            
+            // Create an error message element
+            const errorDiv = document.createElement("p");
+            errorDiv.style.color = "red";
+            errorDiv.style.fontSize = "14px";
+            confirmPassword.parentNode.appendChild(errorDiv); // Append error message below confirm password field
+    
+            form.addEventListener("submit", function (event) {
+                if (password.value !== confirmPassword.value) {
+                    event.preventDefault(); // Prevent form submission
+                    errorDiv.textContent = "Passwords do not match!";
+                } else {
+                    errorDiv.textContent = ""; // Clear error if passwords match
+                }
+            });
+        });
+    </script>    
 </body>
 </html>
