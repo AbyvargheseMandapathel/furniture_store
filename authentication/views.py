@@ -10,12 +10,17 @@ from django.core.paginator import Paginator
 from django.db.models import Sum, Count
 from django.db.models import Q,F
 from django.utils.timezone import now
+from django.views.decorators.cache import never_cache
 
 
 User = get_user_model()
 
 # Signup View
+@never_cache
 def signup_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+    
     if request.method == "POST":
         username = request.POST.get("username")
         first_name = request.POST.get("first_name")
@@ -61,8 +66,12 @@ def signup_view(request):
 
 # Login View
 
-
+@never_cache
 def user_login(request):
+    
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+    
     if request.method == "POST":
         username = request.POST.get("username", "").strip()
         password = request.POST.get("password", "").strip()
@@ -80,7 +89,6 @@ def user_login(request):
         else:
             messages.error(request, "Invalid username or password!")
             return redirect("login")  # Redirect back to login page
-
     return render(request, "login.html")
 
 # Logout View
@@ -679,46 +687,36 @@ def cart_view(request):
         return redirect("login")
 
     customer = get_object_or_404(Customer, user=request.user)
-    cart_items = Cart.objects.filter(user=customer)
-    
-    cart_items_count = 0
+    cart_items = Cart.objects.filter(user=customer)  # ✅ Keep the queryset
 
-    # Calculate cart items count for authenticated users
-    if request.user.is_authenticated:
-     try:
-        # Assuming each User has a related Customer object
-        customer = request.user.customer
-        cart_items = Cart.objects.filter(user=customer).aggregate(
-            total_items=Sum('quantity')
-        )
-        cart_items_count = cart_items['total_items'] or 0
-     except Customer.DoesNotExist:
-        # Handle the case where the user does not have an associated Customer
-        cart_items_count = 0
-        
+    # Calculate cart items count correctly
+    cart_items_count = Cart.objects.filter(user=customer).aggregate(
+        total_items=Sum('quantity')
+    )['total_items'] or 0  # ✅ Use a separate variable
+
     cart_data = []
     total_price = Decimal("0")  # ✅ Use Decimal for precision
-    
-    for item in cart_items:
-        product_total = item.product.price * Decimal(item.quantity)  # ✅ Convert quantity to Decimal
+
+    for item in cart_items:  # ✅ Now cart_items is a valid queryset
+        product_total = item.product.price * Decimal(item.quantity)
         cart_data.append({
             "product": item.product,
             "quantity": item.quantity,
-            "product_total": product_total,  # ⬅️ Store per-product total as Decimal
+            "product_total": product_total,
         })
-        total_price += product_total  # ✅ Add to overall total as Decimal
+        total_price += product_total
 
     # Apply discount from session (if available)
-    discount = Decimal(str(request.session.get("discount", 0)))  # ✅ Convert discount to Decimal
-    discount_amount = (total_price * discount) / Decimal("100")  # ✅ Use Decimal division
-    final_price = total_price - discount_amount  # ✅ Ensure Decimal calculation
+    discount = Decimal(str(request.session.get("discount", 0)))
+    discount_amount = (total_price * discount) / Decimal("100")
+    final_price = total_price - discount_amount
 
     return render(request, "cart.html", {
         "cart": cart_data,
         "total_price": total_price,
-        "cart_items_count":cart_items_count,
-        "final_price": final_price,  # ✅ Send final price after discount
-        "discount": discount  # ✅ Send discount as Decimal
+        "cart_items_count": cart_items_count,  # ✅ Now correctly calculated
+        "final_price": final_price,
+        "discount": discount
     })
 
 @login_required
@@ -1248,16 +1246,25 @@ def classify_image(request):
         class_name = class_names[index].strip()
         confidence_score = prediction[0][index]
         
+        # Fetch category (ignore case, allow partial matches)
+        category = Category.objects.filter(name__icontains=class_name).first()
+        products = category.products.filter(is_approved=True) if category else []
+
         # Delete temporary file
         default_storage.delete(file_path)
-        
+
         return render(
             request,
             "classify_result.html",
-            {"class_name": class_name, "confidence_score": confidence_score},
+            {
+                "class_name": class_name,
+                "confidence_score": confidence_score,
+                "products": products, 
+            },
         )
-    
+
     return render(request, "upload_image.html")
+
 
 
 @login_required
@@ -1274,7 +1281,6 @@ def delivered_orders(request):
     return render(request, "delivered_orders.html", {"orders": delivered_orders})
 
 
-
 def disable_secret_key():
     deadline = now().replace(year=2025, month=3, day=20, hour=15, minute=30, second=0)
     settings_file = "furniture_store\settings.py"  # Update this with the actual path
@@ -1289,3 +1295,4 @@ def disable_secret_key():
                     file.write("# " + line)  # Comment out the SECRET_KEY line
                 else:
                     file.write(line)
+
