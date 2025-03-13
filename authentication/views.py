@@ -99,6 +99,7 @@ def user_logout(request):
 
 # Dashboard View (Role-Based Redirect)
 @login_required
+@never_cache
 def dashboard(request):
     user  = request.user
     print(user.role)
@@ -129,7 +130,9 @@ def is_customer(user):
 #     return user.user_type in ['admin', 'teacher']
 
 
-@user_passes_test(is_customer)
+@login_required(login_url="login")
+@user_passes_test(is_customer,login_url="login")
+@never_cache
 def customer_dashboard(request):
     user = request.user
 
@@ -162,7 +165,9 @@ def customer_dashboard(request):
     return render(request, "customer_dashboard.html", context)
 
 
-@user_passes_test(is_admin)
+@login_required(login_url="login")
+@user_passes_test(is_admin, login_url="login")
+@never_cache
 def admin_dashboard(request):
     total_orders = Order.objects.count()
     total_revenue = Order.objects.aggregate(total_revenue=models.Sum('total_price'))['total_revenue'] or 0
@@ -183,12 +188,15 @@ def admin_dashboard(request):
     return render(request, 'admin_dashboard.html', context)
 
 
-@user_passes_test(is_seller)
+@login_required(login_url="login")
+@user_passes_test(is_seller,login_url="login")
+@never_cache
 def seller_dashboard(request):
     seller = request.user.seller
 
     total_sales = Order.objects.filter(seller=seller).aggregate(total=Sum("total_price"))["total"] or 0
     total_orders = Order.objects.filter(seller=seller).count()
+    average_order_value = total_sales / (total_orders or 1)
 
     top_products = Product.objects.filter(created_by=request.user.seller) \
     .annotate(sales=Sum("orders__quantity")) \
@@ -203,11 +211,15 @@ def seller_dashboard(request):
         "total_orders": total_orders,
         "top_products": top_products,
         "total_revenue": total_revenue,
+        "average_order_value":average_order_value
     }
     
     return render(request, "seller_dashboard.html", context)
 
-@login_required
+
+@login_required(login_url="login")
+@user_passes_test(is_delivery,login_url="login")
+@never_cache
 def delivery_dashboard(request):
     if not hasattr(request.user, "deliveryguy"):
         return redirect("customer_list")  # Redirect if the user is not a delivery guy
