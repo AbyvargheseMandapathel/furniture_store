@@ -1256,7 +1256,7 @@ def classify_image(request):
         prediction = model.predict(data)
         index = np.argmax(prediction)
         class_name = class_names[index].strip()
-        confidence_score = prediction[0][index]
+        confidence_score = prediction[0][index]*100
         
         # Fetch category (ignore case, allow partial matches)
         category = Category.objects.filter(name__icontains=class_name).first()
