@@ -1,6 +1,15 @@
-Sofa
 TV
+Sofa
 Table
-Fridge
+fridge
 Chair
 Almirah
+Plate Rack
+Pantry
+DoorMat
+Door
+Closet
+China Cabinet
+Chandelier
+carpet
+Bed
