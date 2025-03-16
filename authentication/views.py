@@ -640,34 +640,33 @@ def customer_list(request):
     category = request.GET.get("category", "")
     query = request.GET.get("q", "")
     products = Product.objects.filter(is_approved=True)
-    categories = Category.objects.all()  # Fetch all categories
+    categories = Category.objects.all()  
 
-    # Initialize cart_items_count to 0
     cart_items_count = 0
 
     if request.user.is_authenticated:
-     try:
-        # Assuming each User has a related Customer object
-        customer = request.user.customer
-        cart_items = Cart.objects.filter(user=customer).aggregate(
-            total_items=Sum('quantity')
-        )
-        cart_items_count = cart_items['total_items'] or 0
-     except Customer.DoesNotExist:
-        # Handle the case where the user does not have an associated Customer
-        cart_items_count = 0
+        try:
+            customer = request.user.customer
+            cart_items = Cart.objects.filter(user=customer).aggregate(
+                total_items=Sum('quantity')
+            )
+            cart_items_count = cart_items['total_items'] or 0
+        except Customer.DoesNotExist:
+            cart_items_count = 0
 
     if query:
-        products = products.filter(Q(name__icontains=query) | Q(description__icontains=query))
+        products = products.filter(
+            Q(name__icontains=query) | Q(description__icontains=query)
+        )
 
     if category:
         products = products.filter(category__name=category)
 
-    paginator = Paginator(products, 10)  # 10 products per page
+    
+    paginator = Paginator(products, 10)  
     page_number = request.GET.get("page")
     products_page = paginator.get_page(page_number)
 
-    # Fetch banners and promotions
     banners = Banner.objects.filter(is_active=True)
     promotions = Promotion.objects.filter(is_active=True)
 
@@ -679,7 +678,8 @@ def customer_list(request):
             "banners": banners,
             "promotions": promotions,
             "cart_items_count": cart_items_count,
-            "categories": categories  # Pass categories to template
+            "categories": categories,  
+            "query": query,  
         }
     )
 
@@ -946,8 +946,13 @@ def add_delivery_address(request):
     if not request.user.is_authenticated:
         messages.error(request, "You must be logged in to add a delivery address.")
         return redirect("login")
+    
+    customer = request.user.customer
 
-    print("Rendering delivery address form")
+    cart_items = Cart.objects.filter(user=customer).aggregate(
+            total_items=Sum('quantity')
+        )
+    cart_items_count = cart_items['total_items'] or 0
     
     if request.method == "POST":
         form = DeliveryAddressForm(request.POST)
@@ -963,7 +968,10 @@ def add_delivery_address(request):
     else:
         form = DeliveryAddressForm()
 
-    return render(request, "add_delivery_address.html", {"form": form})
+    return render(request, "add_delivery_address.html", {
+        "form": form, 
+        "cart_items_count": cart_items_count
+        })
 
 
 

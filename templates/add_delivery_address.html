@@ -71,7 +71,8 @@
                 <!-- Zipcode -->
                 <div>
                     <label for="id_zipcode" class="form-label">Zipcode</label>
-                    <input type="text" name="zipcode" id="id_zipcode" class="form-input" placeholder="Enter your zipcode">
+                    <input type="text" name="zipcode" id="id_zipcode" class="form-input" placeholder="Enter your zipcode" oninput="validateZipcode(this)">
+                    <p id="zipcode-error" class="text-red-500 text-sm mt-1 hidden"></p>
                     {% if form.zipcode.errors %}
                     <p class="text-red-500 text-sm mt-1">{{ form.zipcode.errors|join:", " }}</p>
                     {% endif %}
@@ -91,4 +92,18 @@
             </form>
         </div>
     </div>
+    <script>
+        function validateZipcode(input) {
+            let pinRegex = /^[1-9][0-9]{5}$/;  
+            let errorMsg = document.getElementById("zipcode-error");
+    
+            if (!pinRegex.test(input.value)) {
+                errorMsg.innerText = "Invalid ZIP code! Enter a 6-digit number that doesn't start with 0.";
+                errorMsg.classList.remove("hidden");
+            } else {
+                errorMsg.innerText = "";
+                errorMsg.classList.add("hidden");
+            }
+        }
+    </script>
 {% endblock %}
