@@ -13,19 +13,12 @@
           <img
             src="{{ banner.image.url }}"
             alt="{{ banner.title }}"
-            class="banner-image h-96"
+            class="banner-image h-96 w-full object-cover"
           />
         </a>
       </div>
       {% endfor %}
     </div>
-    <!-- Navigation Buttons -->
-    <div
-      class="swiper-button-next text-white bg-black/20 p-4 rounded-full hover:bg-black/30"
-    ></div>
-    <div
-      class="swiper-button-prev text-white bg-black/20 p-4 rounded-full hover:bg-black/30"
-    ></div>
     <!-- Pagination -->
     <div class="swiper-pagination"></div>
   </div>
